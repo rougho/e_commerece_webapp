@@ -1,5 +1,58 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %} Home {% endblock %}
+
 {% block content %}
-<h1>Home</h1>
-{% endblock%}
+<div class="container-fluid">
+    <div class="row"></div>
+    <img src="{% static 'store/images/find-trending-products-sell-ecommerce.png' %}" style="width: 100%; ">
+</div>
+
+<div class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-10 mx-auto my-2 text-center">
+                <h1>All Products</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+        {% for i in '12345678' %}
+        <div class="col-9 mx-auto col-md-6 col-lg-3">
+            <!-- <div class="card-mb-4">
+                <img src="{% static 'store/images/product-1.jpg' %}" class="card-img-top" alt="">
+                <div class="card-footer d-flex-justify-content-between">
+                    <p class="font-weight-bold mb-0">
+                        Asus Motherboards
+                    </p>
+                    <h5 class="text-info font-italic mb-0">
+                        $40
+                    </h5>
+                </div>
+            </div> -->
+            <div class="card mb-4" style="width: 18rem;">
+                <div class="p-4">
+                    <img src="{% static 'store/images/product-1.jpg' %}" class="card-img-top" alt="...">
+                </div>
+                <div class="card-body">
+                    <div class="card-footer d-flex justify-content-between">
+                        <p class="font-weight-bold mb-0">
+                            Asus Motherboards
+                        </p>
+                        <h5 class="text-info font-italic mb-0">
+                            $40
+                        </h5>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+{% endblock %}
