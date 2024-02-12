@@ -1,6 +1,52 @@
 {% extends 'base.html' %}
+
+{% load static %}
 {% block title %} Product {% endblock %}
 {% block content %}
-<h1></h1>
+
+
+<!-- <div class="container py-5">
+    <div class="row mt-5">
+        <div class="col-10 mx-auto col-md-6 my-3">
+            <img src="{% static 'store/images/product-1.jpg' %}" alt="">
+        </div>
+        <div class="col-10 mx-auto col-md-6 my-3">
+            <div>
+                <h1 class="product_title">Asus Motherboard</h1>
+                <p>40$</p>
+                <p class="product_description">
+                    Product Description:
+                </p>
+                <p class="text-justify product_text">
+                    Asus motherboard ROG EDGE Lorem ipsum dolor sit amet consectetur adipisicing elit. Error alias
+                    voluptate eius dolorem veniam? Asperiores odit ut perspiciatis. Illo, minus minima. Minus quaerat
+                    alias et consequuntur enim in tempore possimus.
+                </p>
+                <p class="text-justify product_text">Out of stock</p>
+            </div>
+        </div>
+    </div>
+</div> -->
+<div class="container py-5">
+    <div class="row">
+        <div class="col col-12 col-md-8 col-lg-6">
+            <img src="{% static 'store/images/product-1.jpg' %}" class="img-fluid" alt="">
+        </div>
+        <div class="col my-5 text-start">
+            <h1 class="product_title">Asus Motherboard</h1>
+            <p>Price: <span class="price_num">40</span>$</p>
+            <p class="product_description">
+                Product Description:
+            </p>
+            <p class="text-justify product_text">
+                Asus motherboard ROG EDGE Lorem ipsum dolor sit amet consectetur adipisicing elit. Error alias
+                voluptate eius dolorem veniam? Asperiores odit ut perspiciatis. Illo, minus minima. Minus quaerat
+                alias et consequuntur enim in tempore possimus.
+            </p>
+            <p class="text-justify product_text">Out of stock</p>
+        </div>
+    </div>
+</div>
+
 
 {% endblock%}
