@@ -38,3 +38,7 @@ def product(request, category_slug, product_slug):
 #         product = None
 #         # Optionally, handle the error or redirect
 #     return render(request, 'product.html', {'product': product})
+
+
+def cart(request):
+    return render(request, 'cart.html')

@@ -1,0 +1,14 @@
+.cart_table {
+    min-width: 400px;
+    font-size: 15px;
+}
+
+.cart_thead {
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: .2em;
+}
+
+thead {
+    background-color: rgb(233, 135, 7);
+}

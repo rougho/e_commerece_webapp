@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% load static %}
+{% block title %} Alimama | Cart {% endblock %}
+
+{% block content %}
+
+<div class="text-center">
+    <br>
+    <div class="text-center product_title">
+        Your Shopping Cart
+    </div>
+</div>
+<div class="row mx-auto">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
+        <table class="table cart_table">
+            <thead class="cart_thead">
+                <tr>
+                    <th colspan="4">Your items</th>
+                </tr>
+            </thead>
+            {% for i in '1234' %}
+            <tr>
+                <td>
+                    <a href="http://"> <img src="{% static 'store/images/product-1.jpg'%}" alt="" srcset="" width="150"
+                            height="150"></a>
+                </td>
+                <td class="text-left">
+                    MSI Motherboard
+                    <br>
+                    SKU:4
+                    <br>
+                    Unit price: 200$
+                    <br>
+                    Quantity:2 x 200$
+                </td>
+                <td>400$</td>
+                <td>
+                    <a href="http://"><i class="bi bi-plus-square-fill" style="font-size: 24px; color: green;"></i></a>
+                    <a href="http://"><i class="bi bi-x-square-fill" style="font-size: 24px; color: red;"></i></a>
+                    <a href="http://"><i class="bi bi-trash3-fill" style="font-size: 24px; color: black;"></i></a>
+                </td>
+            </tr>
+            {%endfor%}
+        </table>
+
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
+        <table class="table cart_table">
+            <thead class="cart_thead">
+                <tr>
+                    <th>Check out</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+
+                        Please review your card before payment
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-left">
+                        Your total is <strong>400</strong>$
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="d-grid gap-2">
+            <a href="http://">
+                <button class="btn btn-lg btn-block btn-dark" type="button">Continue Shopping</button>
+            </a>
+        </div>
+        <div class="mx-auto">
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
