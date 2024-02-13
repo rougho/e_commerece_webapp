@@ -30,20 +30,27 @@
 <div class="container py-5">
     <div class="row">
         <div class="col col-12 col-md-8 col-lg-6">
-            <img src="{% static 'store/images/product-1.jpg' %}" class="img-fluid" alt="">
+            <img src="{{ product.image.url }}" class="img-fluid" alt="">
         </div>
-        <div class="col my-5 text-start">
-            <h1 class="product_title">Asus Motherboard</h1>
-            <p>Price: <span class="price_num">40</span>$</p>
-            <p class="product_description">
+        <div class="col my-5 ">
+            <h1 class="product_title">{{ product.name }}</h1>
+            <div class="d-flex justify-content-between">
+                <p>Price: <span class="price_num mb-0">{{ product.price }}</span>$</p>
+
+                {% if product.stock <= 0 %} <p class="text-justify product_text">Out of stock</p>
+                    {% else %}
+                    <button href="" type="button" class="btn btn-success float-right">Add to Cart <i
+                            class="bi bi-cart-plus"></i></button>
+                    {% endif %}
+            </div>
+
+            <br>
+            <p class="product_description mt-3">
                 Product Description:
             </p>
             <p class="text-justify product_text">
-                Asus motherboard ROG EDGE Lorem ipsum dolor sit amet consectetur adipisicing elit. Error alias
-                voluptate eius dolorem veniam? Asperiores odit ut perspiciatis. Illo, minus minima. Minus quaerat
-                alias et consequuntur enim in tempore possimus.
+                {{ product.description }}
             </p>
-            <p class="text-justify product_text">Out of stock</p>
         </div>
     </div>
 </div>
