@@ -38,6 +38,15 @@
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-warning" type="submit">Search</button>
             </form>
+            <div class="navbar-nav ms-3">
+                {% if item_count > 0 %}
+                <a class="nav-link" href="{% url 'cart_detail' %}"><i class="bi bi-basket"
+                        style="font-size: 1.5rem;"></i>({{item_count}})</a>
+                {% endif %}
+                <a class="nav-link" href=""><i class="bi bi-person-plus" style="font-size: 1.5rem;"></i></a>
+                <a class="nav-link" href=""><i class="bi bi-box-arrow-in-right" style="font-size: 1.5rem;"></i></a>
+            </div>
+
         </div>
     </div>
 </nav>
