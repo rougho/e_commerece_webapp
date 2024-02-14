@@ -2,6 +2,7 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
+
 {% load static %}
 {% block title %} Alimama | Sign up {% endblock %}
 
@@ -20,14 +21,16 @@
         <div class="col-9 col-sm-9 col-md-6 col-lg-5 mx-auto">
             <br>
             <p>Enter the following information to create a new account</p>
+            <form method="post">
+                {% csrf_token %}
+                <p>{{ form|crispy }}
+                </p>
+                <button type="submit" name="button" class="btn btn-secondary">Sign Up</button>
+            </form>
+            <br><br><br><br><br>
         </div>
-        <form action="post">
-            {% csrf_token %}
-            <p>{{ form | crispy }}</p>
-            <button type="submit" name="button" class="btn btn-secondary">Sign Up</button>
-        </form>
-
     </div>
+
     {% else %}
     <div class="mx-auto">
         <br>
@@ -35,7 +38,7 @@
             Your account has been successfully created
         </h1>
         <br>
-        <div>
+        <div class="container">
             <p>Dear Customer, <br><br> YOur account has been created and it is ready yo use.
                 <br>
                 <a href="{% url 'home' %}">Go back to home</a>

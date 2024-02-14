@@ -7,6 +7,8 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth.models import Group, User
 from .form import SignUpForm
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, authenticate, logout
 
 # Create your views here.
 
@@ -417,11 +419,56 @@ def signupView(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
+            # This returns the User instance if your form is a ModelForm for the User model.
             form.save()
-        username = form.cleaned_data.get('email')
-        signup_user = User.objects.get(username=username)
-        customer_group = Group.objects.get(name='Customer')
-        customer_group.user_set.add(signup_user)
+            username = form.cleaned_data.get('username')
+            signup_user = User.objects.get(username=username)
+            customer_group = Group.objects.get(name='Customers')
+            customer_group.user_set.add(signup_user)
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
+
+
+# def signupView(request):
+#     if request.method == 'POST':
+#         form = SignUpForm(request.POST)
+#         if form.is_valid():
+#             # Instead of saving the form directly, create a User instance first
+#             user = form.save(commit=False)
+#             # Use the email as the username
+#             user.username = form.cleaned_data['email']
+#             # Save the user instance
+#             user.save()
+#             # Add the user to the 'Customers' group
+#             customer_group, created = Group.objects.get_or_create(
+#                 name='Customers')
+#             customer_group.user_set.add(user)
+#             # Redirect to a new URL or show a success message
+#             # Update 'some_view_name' to your desired redirect view
+#             # return redirect('some_view_name')
+#     else:
+#         form = SignUpForm()
+#     return render(request, 'signup.html', {'form': form})
+
+def signinView(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+            else:
+                return redirect('signup')
+
+    else:
+        form = AuthenticationForm()
+    return render(request, 'signin.html', {'form': form})
+
+
+def signoutView(request):
+    logout(request)
+    return redirect('home')

@@ -39,12 +39,21 @@
                 <button class="btn btn-outline-warning" type="submit">Search</button>
             </form>
             <div class="navbar-nav ms-3">
+                {% if request.user.is_authenticated and request.user.first_name %}
+                <a href="" class="nav-link">Welcome, {{request.user.first_name}}</a>
+                <a href="{% url 'signout' %}" class="nav-link">Sign out</a>
+                {% else %}
+                <a class="nav-link" href="{% url 'signup' %}"><i class="bi bi-person-plus"
+                        style="font-size: 1.5rem;"></i></a>
+                <a class="nav-link" href="{% url 'signin' %}"><i class="bi bi-box-arrow-in-right"
+                        style="font-size: 1.5rem;"></i></a>
+                {%endif%}
+
                 {% if item_count > 0 %}
                 <a class="nav-link" href="{% url 'cart_detail' %}"><i class="bi bi-basket"
                         style="font-size: 1.5rem;"></i>({{item_count}})</a>
                 {% endif %}
-                <a class="nav-link" href=""><i class="bi bi-person-plus" style="font-size: 1.5rem;"></i></a>
-                <a class="nav-link" href=""><i class="bi bi-box-arrow-in-right" style="font-size: 1.5rem;"></i></a>
+
             </div>
 
         </div>
