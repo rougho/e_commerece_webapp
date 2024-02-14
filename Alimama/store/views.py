@@ -4,6 +4,7 @@ from .models import Category, Product, Cart, CartItem
 from django.core.exceptions import ObjectDoesNotExist
 import stripe
 from django.conf import settings
+from django.urls import reverse
 # Create your views here.
 
 
@@ -100,6 +101,39 @@ def add_cart(request, product_id):
     return redirect('cart_detail')
 
 
+# def cart_detail(request, total=0, counter=0, cart_items=None):
+#     try:
+#         cart = Cart.objects.get(cart_id=_cart_id(request))
+#         cart_items = CartItem.objects.filter(cart=cart, active=True)
+#         for cart_item in cart_items:
+#             total += (cart_item.product.price * cart_item.quantity)
+#             counter += cart_item.quantity
+#     except ObjectDoesNotExist:
+#         pass
+
+#     stripe.api_key = settings.STRIPE_SECRET_KEY
+#     stripe_total = int(total * 100)
+#     description = 'EC-Store - New Order'
+#     data_key = settings.STRIPE_PUBLISHABLE_KEY
+#     if request.method == 'POST':
+#         try:
+#             token = request.POST['stripeToken']
+#             email = request.POST['stripeEmail']
+#             customer = stripe.Customer.create(
+#                 email=email,
+#                 source=token)
+#             charge = stripe.Charge.create(
+#                 amount=stripe_total,
+#                 currency='eur',
+#                 description=description,
+#                 customer=customer.id
+
+#             )
+#         except stripe.error.CardError as e:
+#             return False, e
+
+#     return render(request, 'cart.html', dict(cart_items=cart_items, total=total, counter=counter, data_key=data_key, stripe_total=stripe_total, description=description))
+
 def cart_detail(request, total=0, counter=0, cart_items=None):
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
@@ -111,11 +145,44 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
         pass
 
     stripe.api_key = settings.STRIPE_SECRET_KEY
+    # Stripe requires the amount to be in cents
     stripe_total = int(total * 100)
     description = 'EC-Store - New Order'
     data_key = settings.STRIPE_PUBLISHABLE_KEY
 
-    return render(request, 'cart.html', dict(cart_items=cart_items, total=total, counter=counter, data_key=data_key, stripe_total=stripe_total, description=description))
+    if request.method == 'POST':
+        # Create a Stripe Checkout Session
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'eur',
+                    'product_data': {
+                        'name': 'Total Cart Amount',
+                    },
+                    'unit_amount': stripe_total,
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url=request.build_absolute_uri(
+                reverse('success_view')) + '?session_id={CHECKOUT_SESSION_ID}',
+
+        )
+
+        # Redirect to Stripe Checkout
+        return redirect(session.url, code=303)
+
+    context = {
+        'cart_items': cart_items,
+        'total': total,
+        'counter': counter,
+        'data_key': data_key,
+        'stripe_total': stripe_total,
+        'description': description
+    }
+
+    return render(request, 'cart.html', context)
 
 
 def cart_remove(request, product_id):
@@ -140,3 +207,8 @@ def delete_cart_item(request, product_id):
 
 def cart(request):
     return render(request, 'cart.html')
+
+
+def success_view(request):
+    # Add your success logic here
+    return render(request, 'order_success.html', {})
