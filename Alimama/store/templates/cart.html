@@ -101,6 +101,16 @@
             </button>
             <div id="payment-message" class="hidden"></div>
         </form> -->
+        <!-- <div class="mx-auto">
+            <form action="" method="post">
+                {% csrf_token %}
+                <script src="https://checkout.stripe.com/checkout.js" class="stripe-button" data-key="{{data_key}}"
+                    data-amount="{{stripe_total}}" data-name="EC-Store" data-description="{{description}}"
+                    data-locale="auto" data-currency="eur" data-shipping-address="true" data-billing-address="true"
+                    data-zip-code="true">
+                    </script>
+            </form>
+        </div> -->
         <div class="mx-auto">
             <form action="" method="post">
                 {% csrf_token %}
@@ -117,18 +127,26 @@
             <div id="checkout">
                 <a href="{% url 'home' %}">
                     <button class="btn btn-lg btn-block btn-success" style="width: 100%;" type="button">Pay Now</button>
-                </a>
-            </div> -->
+                </a> -->
+            <!-- <form action="" method="POST">
+                {% csrf_token %}
+                <button data-key="{{data_key}}" data-amount="{{stripe_total}}" data-name="EC-Store"
+                    data-description="{{description}}" data-locale="auto" data-currency="eur"
+                    data-shipping-address="true" data-billing-address="true" data-zip-code="true"
+                    class="btn btn-lg btn-block btn-success" style="width: 100%;" type="submit">Pay Now</button>
+            </form> -->
 
-            <a href="{% url 'home' %}">
-                <button class="btn btn-lg btn-block btn-dark" type="button" style="width: 100%;">Continue
-                    Shopping</button>
-            </a>
         </div>
-        <div class="">
 
-        </div>
+        <a href="{% url 'home' %}">
+            <button class="btn btn-lg btn-block btn-dark" type="button" style="width: 100%;">Continue
+                Shopping</button>
+        </a>
     </div>
+    <div class="">
+
+    </div>
+</div>
 </div>
 <br><br><br><br><br><br><br><br>
 {% endif %}

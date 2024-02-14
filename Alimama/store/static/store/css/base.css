@@ -30,3 +30,8 @@ body {
 .price_num {
     font-size: 25px;
 }
+
+.erroelist li {
+    color: red;
+    font-weight: bold;
+}

@@ -78,28 +78,28 @@ class Order(models.Model):
     total = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name='EUR Order Total')
     emailAddress = models.EmailField(
-        max_length=250, blank=True, verbose_name='Email Address')
+        max_length=250, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     billingName = models.CharField(
-        max_length=250, blank=True, verbose_name='Billing Name')
+        max_length=250, blank=True)
     billingAddress1 = models.CharField(
-        max_length=250, blank=True, verbose_name='Billing Address 1')
+        max_length=250, blank=True)
     billingCity = models.CharField(
-        max_length=250, blank=True, verbose_name='Billing City')
+        max_length=250, blank=True)
     billingPostcode = models.CharField(
-        max_length=250, blank=True, verbose_name='Billing Postcode')
+        max_length=250, blank=True)
     billingCountry = models.CharField(
-        max_length=250, blank=True, verbose_name='Billing Country')
+        max_length=250, blank=True)
     shippingName = models.CharField(
-        max_length=250, blank=True, verbose_name='Shipping Name')
+        max_length=250, blank=True)
     shippingAddress1 = models.CharField(
-        max_length=250, blank=True, verbose_name='Shipping Address 1')
+        max_length=250, blank=True)
     shippingCity = models.CharField(
-        max_length=250, blank=True, verbose_name='Shipping City')
+        max_length=250, blank=True)
     shippingPostcode = models.CharField(
-        max_length=250, blank=True, verbose_name='Shipping Postcode')
+        max_length=250, blank=True)
     shippingCountry = models.CharField(
-        max_length=250, blank=True, verbose_name='Shipping Country')
+        max_length=250, blank=True)
 
     class Meta:
         db_table = 'Order'
