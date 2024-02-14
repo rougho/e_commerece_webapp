@@ -1,14 +1,15 @@
-.cart_table {
-    min-width: 400px;
-    font-size: 15px;
+html,
+body {
+    height: 100%;
+    margin: 0;
 }
 
-.cart_thead {
-    font-weight: normal;
-    text-transform: uppercase;
-    letter-spacing: .2em;
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-thead {
-    background-color: rgb(233, 135, 7);
+.content {
+    flex: 1;
 }

@@ -24,7 +24,7 @@
         Your Shopping Cart
     </div>
 </div>
-<div class="row mx-auto">
+<div class="row mx-auto mb-5">
     <div class="col-lg-9 col-md-9 col-sm-12 text-center">
         <table class="table cart_table">
             <thead class="cart_thead">
@@ -70,7 +70,7 @@
         </table>
 
     </div>
-    <div class="col-lg-3 col-md-3 col-sm-12 text-center">
+    <div class="col-lg-3 col-md-3 col-sm-12 text-center mb-5">
         <table class="table cart_table">
             <thead class="cart_thead">
                 <tr>
@@ -91,16 +91,32 @@
                 </tr>
             </tbody>
         </table>
+
+        <!-- <form id="payment-form">
+            <div id="payment-element">
+            </div>
+            <button id="submit">
+                <div class="spinner hidden" id="spinner"></div>
+                <span id="button-text">Pay now</span>
+            </button>
+            <div id="payment-message" class="hidden"></div>
+        </form> -->
+
         <div class="d-grid gap-2">
             <a href="{% url 'home' %}">
-                <button class="btn btn-lg btn-block btn-dark" type="button">Continue Shopping</button>
+                <button class="btn btn-lg btn-block btn-success" style="width: 100%;" type="button">Pay Now</button>
+            </a>
+            <a href="{% url 'home' %}">
+                <button class="btn btn-lg btn-block btn-dark" type="button" style="width: 100%;">Continue
+                    Shopping</button>
             </a>
         </div>
-        <div class="mx-auto">
+        <div class="">
 
         </div>
     </div>
 </div>
+<br><br><br><br><br><br><br><br>
 {% endif %}
 
 {% endblock %}
