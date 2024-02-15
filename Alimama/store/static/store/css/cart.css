@@ -13,3 +13,17 @@ body {
 .content {
     flex: 1;
 }
+
+.stripe-button-el {
+    font-family: 'Poppins', sans-serif !important;
+    width: 100%;
+    display: block !important;
+    background-color: #212529 !important;
+    margin-bottom: 5px;
+}
+
+.stripe-button-el span {
+    font-family: 'Poppins', sans-serif !important;
+
+    height: 56px;
+}

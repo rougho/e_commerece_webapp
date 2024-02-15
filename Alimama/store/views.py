@@ -10,8 +10,6 @@ from .form import SignUpForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from django.views import View
-from django.http import HttpRequest
 
 # Create your views here.
 
@@ -250,7 +248,7 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
 
                     print('order created')
 
-                return redirect('home')
+                return redirect('success_view', order_details.id)
             except ObjectDoesNotExist:
                 pass
 
@@ -258,133 +256,6 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
             return False, e
 
     return render(request, 'cart.html', dict(cart_items=cart_items, total=total, counter=counter, data_key=data_key, stripe_total=stripe_total, description=description))
-
-
-# def cart_detail(request, total=0, counter=0, cart_items=None):
-#     try:
-#         cart = Cart.objects.get(cart_id=_cart_id(request))
-#         cart_items = CartItem.objects.filter(cart=cart, active=True)
-#         for cart_item in cart_items:
-#             total += (cart_item.product.price * cart_item.quantity)
-#             counter += cart_item.quantity
-#     except ObjectDoesNotExist:
-#         pass
-
-#     stripe.api_key = settings.STRIPE_SECRET_KEY
-#     # Stripe requires the amount to be in cents
-#     stripe_total = int(total * 100)
-#     description = 'EC-Store - New Order'
-#     data_key = settings.STRIPE_PUBLISHABLE_KEY
-
-#     if request.method == 'POST':
-#         # Create a Stripe Checkout Session
-#         session = stripe.checkout.Session.create(
-#             payment_method_types=['card'],
-#             line_items=[{
-#                 'price_data': {
-#                     'currency': 'eur',
-#                     'product_data': {
-#                         'name': 'Total Cart Amount',
-#                     },
-#                     'unit_amount': stripe_total,
-#                 },
-#                 'quantity': 1,
-#             }],
-#             mode='payment',
-#             success_url=request.build_absolute_uri(
-#                 reverse('success_view')) + '?session_id={CHECKOUT_SESSION_ID}',
-
-#         )
-
-#         # Redirect to Stripe Checkout
-#         return redirect(session.url, code=303)
-
-#     context = {
-#         'cart_items': cart_items,
-#         'total': total,
-#         'counter': counter,
-#         'data_key': data_key,
-#         'stripe_total': stripe_total,
-#         'description': description
-#     }
-
-#     return render(request, 'cart.html', context)
-
-
-# def cart_detail(request, total=0, counter=0, cart_items=None):
-#     try:
-#         # Assuming _cart_id is a helper function you have defined elsewhere
-#         cart = Cart.objects.get(cart_id=_cart_id(request))
-#         cart_items = CartItem.objects.filter(cart=cart, active=True)
-#         for cart_item in cart_items:
-#             total += (cart_item.product.price * cart_item.quantity)
-#             counter += cart_item.quantity
-#     except ObjectDoesNotExist:
-#         pass
-
-#     # Stripe settings
-#     stripe.api_key = settings.STRIPE_SECRET_KEY
-#     # Stripe requires the amount to be in cents
-#     stripe_total = int(total * 100)
-#     description = 'EC-Store - New Order'
-#     data_key = settings.STRIPE_PUBLISHABLE_KEY
-
-#     if request.method == 'POST':
-#         try:
-#             # Retrieve the token, email, billing, and shipping information from the form
-#             token = request.POST['stripeToken']
-#             email = request.POST['stripeEmail']
-#             # Additional customer information can be collected here as needed
-
-#             # Create a Stripe customer
-#             customer = stripe.Customer.create(
-#                 email=email,
-#                 source=token
-#             )
-
-#             # Create a charge
-#             charge = stripe.Charge.create(
-#                 amount=stripe_total,
-#                 currency='eur',
-#                 description=description,
-#                 customer=customer.id
-#             )
-
-#             # Assuming Order and OrderItem are models related to your order processing system
-#             order_details = Order.objects.create(
-#                 token=token,
-#                 total=total,
-#                 emailAddress=email,
-#                 # Include other billing and shipping details as necessary
-#             )
-#             order_details.save()
-
-#             # Iterate through cart items and create order items
-#             for order_item in cart_items:
-#                 or_item = OrderItem.objects.create(
-#                     product=order_item.product,
-#                     quantity=order_item.quantity,
-#                     price=order_item.product.price,
-#                     order=order_details
-#                 )
-#                 or_item.save()
-
-#                 # Update stock
-#                 product = order_item.product
-#                 product.stock = int(product.stock - order_item.quantity)
-#                 product.save()
-
-#                 # Clear the cart
-#                 order_item.delete()
-
-#             # Redirect to the home page after order completion
-#             return redirect('home')
-
-#         except stripe.error.CardError as e:
-#             # Handle card error
-#             return False, e
-
-#     return render(request, 'cart.html', dict(cart_items=cart_items, total=total, counter=counter, data_key=data_key, stripe_total=stripe_total, description=description))
 
 
 def cart_remove(request, product_id):
@@ -493,7 +364,7 @@ def signoutView(request):
     return redirect('home')
 
 
-@login_required(redirect_field_name='next', login_url='signin')
+@login_required(redirect_field_name='nex', login_url='signin')
 def orderHistory(request):
     if request.user.is_authenticated:
         email = str(request.user.email)

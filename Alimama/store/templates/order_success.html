@@ -1,1 +1,20 @@
-thank you
+{% extends 'base.html' %}
+{% load static %}
+
+{% load static %}
+{% block title %} Alimama | Order Confirmed {% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <br><br>
+    <h1 class="text-center product_title">
+        Thank you for placing your order
+    </h1>
+    <br><br><br>
+    <p>Yourorder number is: <b>{{ customer_order.id }}</b></p>
+    <br>
+    <p>We recevied your order and will begin processing shortly. An email confirmation has been sent to you.</p>
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+{% endblock%}
