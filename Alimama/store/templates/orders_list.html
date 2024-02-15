@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} Alimama | Order History {% endblock %}
+
+{% block content %}
+
+<div class="text-center">
+    <br>
+    <h1 class="text-center product_title">
+        Order History
+    </h1>
+    <br>
+    {% if order_history %}
+    <table class="table table striped">
+        <thead>
+            <tr>
+                <th>Order Number</th>
+                <th>Order Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in order_details %}
+            <tr>
+                <td>{{order.id}}</td>
+                <td>{{order.created}}</td>
+                <td>{{order.total}}</td>
+                <td>status?</td>
+                <td><a href="http://">View Order</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>You have not placed any orders yet.</p>
+    <br><br>
+    <a href="{% url 'home' %}" class="btn btn-secondary">Continue shopping</a>
+    {% endif %}
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+{% endblock %}

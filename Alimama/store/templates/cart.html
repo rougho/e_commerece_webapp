@@ -122,19 +122,16 @@
             </form>
         </div>
 
+        <!-- gpt -->
+
         <div class="d-grid gap-2">
-            <!-- {% csrf_token %}
-            <div id="checkout">
-                <a href="{% url 'home' %}">
-                    <button class="btn btn-lg btn-block btn-success" style="width: 100%;" type="button">Pay Now</button>
-                </a> -->
-            <!-- <form action="" method="POST">
+            <form action="" method="POST">
                 {% csrf_token %}
                 <button data-key="{{data_key}}" data-amount="{{stripe_total}}" data-name="EC-Store"
                     data-description="{{description}}" data-locale="auto" data-currency="eur"
                     data-shipping-address="true" data-billing-address="true" data-zip-code="true"
                     class="btn btn-lg btn-block btn-success" style="width: 100%;" type="submit">Pay Now</button>
-            </form> -->
+            </form>
 
         </div>
 
