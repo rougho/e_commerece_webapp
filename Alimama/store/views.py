@@ -382,7 +382,7 @@ def viewOrder(request, order_id):
 
 
 def search(request):
-    products = Product.objects.filter(name__icontains=request.GET['name'])
+    products = Product.objects.filter(name__icontains=request.GET['title'])
     return render(request, 'home.html', {'products': products})
 
 # database test
