@@ -100,6 +100,7 @@ class Order(models.Model):
         max_length=250, blank=True)
     shippingCountry = models.CharField(
         max_length=250, blank=True)
+    # item_name = models.CharField(max_length=350, blank=True)
 
     class Meta:
         db_table = 'Order'

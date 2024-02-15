@@ -44,11 +44,11 @@
                     SKU: {{ items.product.id }}
 
                     <br>
-                    Unit price: {{ items.product.price }}
+                    Unit price: {{ items.product.price }} €
                     <br>
                     Quantity: {{ items.quantity }}
                 </td>
-                <td> {{ items.sub_total }}
+                <td> {{ items.sub_total }} €
                 </td>
                 {% if items.quantity < items.product.stock %} <td>
                     <a href="{% url 'add_cart' items.product.id %}"><i class="bi bi-plus-square-fill"
@@ -86,7 +86,7 @@
                 </tr>
                 <tr>
                     <td class="text-left">
-                        Your total is <strong>{{ total }}</strong>$
+                        Your total is <strong>{{ total }} €</strong>$
                     </td>
                 </tr>
             </tbody>

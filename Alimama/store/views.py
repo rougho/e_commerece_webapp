@@ -364,9 +364,34 @@ def signoutView(request):
     return redirect('home')
 
 
-@login_required(redirect_field_name='nex', login_url='signin')
+@login_required(redirect_field_name='next', login_url='signin')
 def orderHistory(request):
     if request.user.is_authenticated:
         email = str(request.user.email)
         order_details = Order.objects.filter(emailAddress=email)
-    return render(request, 'orders_list.html', {'order_details': order_details})
+    return render(request, 'orders_list.html', {'order_details': order_details, 'test': "hello"})
+
+
+@login_required(redirect_field_name='next', login_url='signin')
+def viewOrder(request, order_id):
+    if request.user.is_authenticated:
+        email = str(request.user.email)
+        order = Order.objects.get(id=order_id, emailAddress=email)
+        order_items = OrderItem.objects.filter(order=order)
+    return render(request, 'order_detail.html', {'order': order, 'order_items': order_items})
+
+
+def search(request):
+    products = Product.objects.filter(name__icontains=request.GET['name'])
+    return render(request, 'home.html', {'products': products})
+
+# database test
+# # Query all users
+# users = User.objects.all()
+
+# # Extract email addresses
+# emails = [user.email for user in users]
+
+# # Print each email
+# for email in emails:
+#     print(email)

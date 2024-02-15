@@ -42,7 +42,6 @@ class OrderItemAdmin(admin.TabularInline):
         ('Price', {'fields': ['price'], }),
     ]
     readonly_fields = ['product', 'quantity', 'price']
-    can_delete = False
     max_num = 0
 
 
@@ -66,8 +65,8 @@ class OrderAdmin(admin.ModelAdmin):
         OrderItemAdmin,
     ]
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
 
     def has_add_permission(self, request):
         return False
