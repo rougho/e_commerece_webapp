@@ -37,8 +37,8 @@ def product(request, category_slug, product_slug):
             category__slug=category_slug, slug=product_slug)
     except Exception as e:
         raise e
-
-    return render(request, 'product.html', {'product': product})
+    quantity_range = range(product.stock)
+    return render(request, 'product.html', {'product': product, 'quantity_range': quantity_range})
 
 # def product(request, category_slug, product_slug):
 #     try:
@@ -83,31 +83,61 @@ def _cart_id(request):
 
 
 # this work!!!!
+# def add_cart(request, product_id):
+#     product = Product.objects.get(id=product_id)
+#     try:
+#         cart = Cart.objects.get(cart_id=_cart_id(request))
+#     except Cart.DoesNotExist:
+#         cart = Cart.objects.create(
+#             cart_id=_cart_id(request)
+#         )
+#         cart.save()
+#     try:
+#         cart_item = CartItem.objects.get(product=product, cart=cart)
+#         if cart_item.quantity < cart_item.product.stock:
+#             cart_item.quantity += 1
+
+#         cart_item.save()
+#     except CartItem.DoesNotExist:
+#         cart_item = CartItem.objects.create(
+#             product=product,
+#             quantity=1,
+#             cart=cart
+#         )
+#     cart_item.save()
+
+#     return redirect('cart_detail')
 def add_cart(request, product_id):
     product = Product.objects.get(id=product_id)
+
+    # Get the quantity from the request's query parameters
+    # Default to 1 if quantity is not provided or not an integer
+    quantity = int(request.GET.get('quantity', 1))
+
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
     except Cart.DoesNotExist:
-        cart = Cart.objects.create(
-            cart_id=_cart_id(request)
-        )
-        cart.save()
+        cart = Cart.objects.create(cart_id=_cart_id(request))
+
     try:
         cart_item = CartItem.objects.get(product=product, cart=cart)
         if cart_item.quantity < cart_item.product.stock:
-            cart_item.quantity += 1
-
-        cart_item.save()
+            # Ensure that the added quantity does not exceed the available stock
+            new_quantity = min(cart_item.quantity + quantity,
+                               cart_item.product.stock)
+            cart_item.quantity = new_quantity
+        else:
+            # Optionally handle cases where adding more would exceed the available stock
+            # For example, display a message to the user
+            pass
     except CartItem.DoesNotExist:
+        # Create a new cart item if it doesn't exist
         cart_item = CartItem.objects.create(
-            product=product,
-            quantity=1,
-            cart=cart
-        )
+            product=product, quantity=quantity, cart=cart)
+
     cart_item.save()
 
     return redirect('cart_detail')
-
 
 # def cart_detail(request, total=0, counter=0, cart_items=None):
     # try:
@@ -173,6 +203,7 @@ def add_cart(request, product_id):
 #         'stripe_total': stripe_total,
 #         'description': description
 #     })
+
 
 def cart_detail(request, total=0, counter=0, cart_items=None):
     try:

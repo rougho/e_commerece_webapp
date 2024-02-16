@@ -34,17 +34,65 @@
         </div>
         <div class="col my-5 ">
             <h1 class="product_title">{{ product.name }}</h1>
+
             <div class="d-flex justify-content-between">
                 <p>Price: <span class="price_num mb-0">{{ product.price }}</span>€</p>
 
                 {% if product.stock <= 0 %} <p class="text-justify product_text">Out of stock</p>
-                    {% else %}
-                    <a href="{% url 'add_cart' product.id %}">
-                        <button type="button" class="btn btn-success float-right">Add
-                            to Cart <i class="bi bi-cart-plus"></i></button>
-                    </a>
+                    {% elif not request.user.is_authenticated and not request.user.first_name %}
+                    <div class="row">
+                        <div class="col">
+                            <!--Dropdown-->
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle disabled" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="true">
+                                    Quantity:
+                                </button>
+                                <!-- <ul class="dropdown-menu">
+                                    {% for quantity in quantity_range %}
+                                    {% if quantity > 0 %}
+                                    <li><a class="dropdown-item" href="#">{{quantity}}</a></li>
+                                    {%endif%}
+                                    {% endfor %}
+                                </ul> -->
+                            </div>
+                            <!---->
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'add_cart' product.id %}" class="btn btn-success disabled" role="button"
+                                aria-disabled="true" style="width: 200px;">Add to Cart <i class="bi bi-cart-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {%elif request.user.is_authenticated and request.user.first_name %}
+                    <div class="row">
+                        <div class="col">
+                            <!--Dropdown-->
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle disabled" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="true">
+                                    Quantity:
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for quantity in quantity_range %}
+                                    {% if quantity > 0 %}
+                                    <li><a class="dropdown-item" href="#">{{quantity}}</a></li>
+                                    {%endif%}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <!---->
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'add_cart' product.id %}" class="btn btn-success" role="button"
+                                aria-disabled="false" style="width: 200px;">Add to Cart <i class="bi bi-cart-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+
 
                     {% endif %}
+
             </div>
 
             <br>
