@@ -63,8 +63,7 @@
                                 aria-expanded="false">Welcome, {{request.user.first_name}}</a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{% url 'home' %}">Home</a></li>
-                                <li><a class="dropdown-item" href="{% url 'home' %}">Profile</a></li>
-                                <li><a class="dropdown-item" href="{% url 'order_history' %}">Orders</a></li>
+                                <li><a class="dropdown-item" href="{% url 'user_dashboard' %}">Profile</a></li>
                                 <li><a class="dropdown-item" href="{% url 'signout' %}">
                                         <span style="font-weight: 600;">Sign out</span> </a></li>
 

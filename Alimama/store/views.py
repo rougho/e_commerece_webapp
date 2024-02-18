@@ -12,6 +12,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from .form import ProfileForm
 from django.http import HttpResponseRedirect
+from django.contrib import messages
+
 
 # Create your views here.
 
@@ -387,22 +389,32 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 #     # Optionally handle the case where the user is somehow not authenticated
 #     # This is more of a fallback, as @login_required should take care of this
 
-@login_required(redirect_field_name='next', login_url='signin')
-def profile(request):
-    if request.method == 'POST':
-        # Handling form submission.
-        form = ProfileForm(request.POST, instance=request.user.profile)
-        if form.is_valid():
-            form.save()
-            # Redirect to the profile page with a success message, or elsewhere as needed.
-            # Assuming 'profile' is the name of the URL pattern for this view.
-            return redirect('profile')
-    else:
-        # Handling a GET request, displaying the form with existing data.
-        form = ProfileForm(instance=request.user.profile)
 
-    # Pass the form to the template.
-    return render(request, 'user_profile.html', {'form': form})
+# PROFILE
+# @login_required(redirect_field_name='next', login_url='signin')
+# def profile(request):
+#     user_profile = get_object_or_404(Profile, user=request.user)
+
+#     if request.method == 'POST':
+#         # Handling form submission.
+#         form = ProfileForm(request.POST, instance=request.user.profile)
+#         if form.is_valid():
+#             form.save()
+#             # Redirect to the profile page with a success message, or elsewhere as needed.
+#             # Assuming 'profile' is the name of the URL pattern for this view.
+#             return redirect('profile')
+#     else:
+#         # Handling a GET request, displaying the form with existing data.
+#         form = ProfileForm(instance=request.user.profile)
+
+#     # Pass the form to the template.
+#     return render(request, 'order_detail.html', {'form': form, 'profile': user_profile})
+
+
+# @login_required(redirect_field_name='next', login_url='signin')
+# def profile(request):
+
+#     return render(request, 'orders_list.html', {'form': form, 'profile': user_profile})
 
 
 def signinView(request):
@@ -429,11 +441,53 @@ def signoutView(request):
 
 
 @login_required(redirect_field_name='next', login_url='signin')
-def orderHistory(request):
-    if request.user.is_authenticated:
-        email = str(request.user.email)
-        order_details = Order.objects.filter(emailAddress=email)
-    return render(request, 'orders_list.html', {'order_details': order_details})
+def userDashboard(request):
+    # Retrieve order history
+    order_details = Order.objects.filter(emailAddress=request.user.email)
+
+    # Handle profile update form submission
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully.')
+            return redirect('profile_and_orders')
+    else:
+        form = ProfileForm(instance=request.user.profile)
+
+    # Fetch user profile
+    user_profile = get_object_or_404(Profile, user=request.user)
+
+    # Prepare context
+    context = {
+        'order_details': order_details,
+        'form': form,
+        'profile': user_profile,  # No need for 'address' as 'profile' includes it
+    }
+
+    return render(request, 'user_dashboard.html', context)
+#     # retrive order
+#     if request.user.is_authenticated:
+#         email = str(request.user.email)
+#         order_details = Order.objects.filter(emailAddress=email)
+
+# # retrive profile info
+#     user_profile = get_object_or_404(Profile, user=request.user)
+
+#     if request.method == 'POST':
+#         form = ProfileForm(request.POST, instance=request.user.profile)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'Profile updated successfully.')
+#             return redirect('profile')
+#     else:
+#         form = ProfileForm(instance=request.user.profile)
+#     print(user_profile)
+
+#     # address
+#     user_address = request.user.profile
+
+#     return render(request, 'user_dashboard.html', {'order_details': order_details, 'form': form, 'profile': user_profile, 'address': user_address})
 
 
 @login_required(redirect_field_name='next', login_url='signin')

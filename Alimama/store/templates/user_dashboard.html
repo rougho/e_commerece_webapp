@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} Alimama | Order History {% endblock %}
+
+{% block content %}
+
+
+<div class="text-center">
+    <br>
+    <!-- <h1 class="text-center product_title mt-5">
+        Profile
+    </h1>
+    <div class="row mt-5">
+
+        <div class="col">
+
+            <h2>Profile Information</h2>
+            <p>Name: {{ user_profile.user.first_name }} {{ profile.user.last_name }}</p>
+            <p>Email: {{ profile.user.email }}</p>
+        </div>
+
+        <div class="col">
+
+            <h2>Edit Profile</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </form>
+        </div>
+    </div> -->
+    <h1 class="text-center product_title mt-5">
+        Profile
+    </h1>
+    <div class="row mt-5">
+        <div class="col">
+            <h2>Profile Information</h2>
+            <div class="text-left">
+                <!-- Corrected from {{ user_profile.user.first_name }} to {{ profile.user.first_name }} -->
+                <p>Name: {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+                <!-- Ensure you use the 'profile' key as defined in your view's context -->
+                <p>Email: {{ profile.user.email }}</p>
+                <!-- Add more fields as needed -->
+                <!-- <p>Address: {{profile.user.address_street}} , {{profile.user.address_postcode}}
+                {{profile.user.address_city}}, {{profile.user.address_country}}</p> -->
+                <p>Street: {{ profile.address_street }}</p>
+                <p>City: {{ profile.address_city }}</p>
+                <p>Postcode: {{ profile.address_postcode }}</p>
+                <p>Country: {{ profile.address_country }}</p>
+            </div>
+
+        </div>
+
+        <div class="col">
+            <h2>Edit Profile</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </form>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+
+    <br><br>
+    <hr style="width: 50%; margin: auto;">
+    <br>
+
+    <br>
+    <h1 class="text-center product_title">
+        Order History
+    </h1>
+    <br>
+    {% if order_details %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Order Number</th>
+                <th>Order Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in order_details %}
+            <tr>
+                <td>{{order.id}}</td>
+                <td>{{order.created|date:"d M Y"}}</td>
+                <td>{{order.total}} €</td>
+                <td><i class="bi bi-patch-check-fill" style="color: green;"></i></td>
+                <td><a href="{% url 'order_detail' order.id %}">View Order</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>You have not placed any orders yet.</p>
+    <br><br>
+    <a href="{% url 'home' %}" class="btn btn-secondary">Continue shopping</a>
+    {% endif %}
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+{% endblock %}
