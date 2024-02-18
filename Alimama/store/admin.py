@@ -1,4 +1,6 @@
+from typing import Any
 from django.contrib import admin
+from django.contrib.admin.options import InlineModelAdmin
 from django.http import HttpRequest
 from .models import Product, Category, Order, OrderItem
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -7,6 +9,7 @@ from django.utils.html import format_html_join
 from django.utils.safestring import mark_safe
 import stripe
 from django.conf import settings
+from .models import Profile
 
 
 # Define ProductAdmin to customize the admin interface for Products
@@ -122,7 +125,6 @@ class OrderAdmin(admin.ModelAdmin):
 
 #     stripe_charge_id.short_description = 'Stripe Charge ID'
 
-
 class UserAdmin(BaseUserAdmin):
     # Extend the existing list_display to include 'group_names'
     list_display = BaseUserAdmin.list_display + ('group_names',)
@@ -143,3 +145,41 @@ class UserAdmin(BaseUserAdmin):
 # Unregister the original User admin and register the customized one
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+
+
+class ProfileInLine(admin.StackedInline):
+    model = Profile
+    can_delete = False
+    verbose_name_plural = 'Profile'
+    # Optionally specify fields to include
+    fields = ['address_street', 'address_city',
+              'address_postcode', 'address_country', 'birthday', 'role']
+
+
+# class CustomUserAdmin(BaseUserAdmin):
+#     inlines = (ProfileInLine, )
+#     list_display = ('username', 'email', 'first_name',
+#                     'last_name', 'is_staff', 'address')
+
+#     def address(self, instance):
+#         return f"{instance.profile.address_street}, {instance.profile.address_postcode} {instance.profile.address_city}, {instance.profile.address_country}"
+#     address.short_description = 'Address'
+
+#     def get_inline_instances(self, request, obj=None):
+#         if not obj:
+#             return list()
+#         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
+
+class CustomUserAdmin(BaseUserAdmin):
+    inlines = (ProfileInLine, )
+    list_display = ('username', 'first_name',
+                    'last_name', 'is_staff', 'address')
+
+    def address(self, instance):
+        return f"{instance.profile.address_street}, {instance.profile.address_city}, {instance.profile.address_postcode}, {instance.profile.address_country}"
+    address.short_description = 'Address'
+
+
+# This ensures the extended functionality is correctly applied to the User model in the Django admin
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)

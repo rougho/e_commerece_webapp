@@ -1,5 +1,8 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 # Create your models here.
 
 
@@ -125,3 +128,37 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return self.product
+
+
+class Profile(models.Model):
+    CUSTOMER = 1
+    SELLER = 2
+    S_ADMIN = 3
+    SUDO = 4
+    ROLE_CHOICE = (
+        (CUSTOMER, 'Customer'),
+        (SELLER, 'Seller'),
+        (S_ADMIN, 'Seller_admin'),
+        (SUDO, 'Sudo')
+
+    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # email = models.EmailField(max_length=250, blank=True)
+    address_street = models.CharField(max_length=200, blank=True)
+    address_city = models.CharField(max_length=200, blank=True)
+    address_postcode = models.CharField(max_length=200, blank=True)
+    address_country = models.CharField(max_length=200, blank=True)
+    # phone_number = models.CharField(max_length=200, blank=True)
+    birthday = models.DateField(null=True, blank=True)
+    role = models.PositiveSmallIntegerField(
+        choices=ROLE_CHOICE, null=True, blank=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+@receiver(post_save, sender=User)
+def create_or_update_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+    instance.profile.save()

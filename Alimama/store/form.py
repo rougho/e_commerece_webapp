@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
+from .models import Profile
 
 
 class SignUpForm(UserCreationForm):
@@ -21,6 +22,15 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = ['first_name', 'last_name',
                   'username', 'password1', 'password2', 'email', 'phone_number']
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['address_street', 'address_city',
+                  'address_postcode', 'address_country', 'birthday']
+        # Add any other fields you want the user to be able to edit
+
 
 # class SignUpForm(UserCreationForm):
 #     first_name = forms.CharField(max_length=250, required=True)

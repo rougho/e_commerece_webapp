@@ -41,69 +41,65 @@
                 {% if product.stock <= 0 %} <p class="text-justify product_text">Out of stock</p>
                     {% elif not request.user.is_authenticated and not request.user.first_name %}
                     <div class="row">
-                        <div class="col">
-                            <!--Dropdown-->
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle disabled" type="button"
-                                    data-bs-toggle="dropdown" aria-expanded="true">
-                                    Quantity:
-                                </button>
-                                <!-- <ul class="dropdown-menu">
-                                    {% for quantity in quantity_range %}
-                                    {% if quantity > 0 %}
-                                    <li><a class="dropdown-item" href="#">{{quantity}}</a></li>
-                                    {%endif%}
-                                    {% endfor %}
-                                </ul> -->
-                            </div>
-                            <!---->
-                        </div>
-                        <div class="col">
-                            <a href="{% url 'add_cart' product.id %}" class="btn btn-success disabled" role="button"
-                                aria-disabled="true" style="width: 200px;">Add to Cart <i class="bi bi-cart-plus"></i>
-                            </a>
-                        </div>
+                        {% if product.stock < 5 %} <div class="col">
+                            Only <span style="color: red; font-size: 1rem;">{{product.stock}}</span> in Stock
                     </div>
-                    {%elif request.user.is_authenticated and request.user.first_name %}
-                    <div class="row">
-                        <div class="col">
-                            <!--Dropdown-->
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle disabled" type="button"
-                                    data-bs-toggle="dropdown" aria-expanded="true">
-                                    Quantity:
-                                </button>
-                                <ul class="dropdown-menu">
-                                    {% for quantity in quantity_range %}
-                                    {% if quantity > 0 %}
-                                    <li><a class="dropdown-item" href="#">{{quantity}}</a></li>
-                                    {%endif%}
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <!---->
-                        </div>
-                        <div class="col">
-                            <a href="{% url 'add_cart' product.id %}" class="btn btn-success" role="button"
-                                aria-disabled="false" style="width: 200px;">Add to Cart <i class="bi bi-cart-plus"></i>
-                            </a>
-                        </div>
+                    {%endif%}
+                    <div class="col">
+                        <form method="post" action="{% url 'add_cart' product.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.path }}">
+                            <select class="form-select" name="quantity" id="quantity" aria-label="Quantity" disabled>
+                                {% for quantity in quantity_range %}
+                                <option value="{{ quantity }}">{{ quantity }}</option>
+                                {% endfor %}
+                            </select>
                     </div>
+                    <div class="col">
+                        <button type="submit" class="btn btn-success disabled" style="width: 200px;">Add to Cart <i
+                                class="bi bi-cart-plus"></i></button>
+                        </form>
 
-
-                    {% endif %}
+                    </div>
 
             </div>
-
-            <br>
-            <p class="product_description mt-3">
-                Product Description:
-            </p>
-            <p class="text-justify product_text">
-                {{ product.description }}
-            </p>
+            {%elif request.user.is_authenticated and request.user.first_name %}
+            <div class="row">
+                {% if product.stock < 5 %} <div class="col">
+                    Only <span style="color: red; font-size: 1rem;">{{product.stock}}</span> in Stock
+            </div>
+            {%endif%}
+            <div class="col">
+                <form method="post" action="{% url 'add_cart' product.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <select class="form-select" name="quantity" id="quantity" aria-label="Quantity">
+                        {% for quantity in quantity_range %}
+                        <option value="{{ quantity }}">{{ quantity }}</option>
+                        {% endfor %}
+                    </select>
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-success" style="width: 200px;">Add to Cart <i
+                        class="bi bi-cart-plus"></i></button>
+                </form>
+            </div>
         </div>
+
+
+        {% endif %}
+
     </div>
+
+    <br>
+    <p class="product_description mt-3">
+        Product Description:
+    </p>
+    <p class="text-justify product_text">
+        {{ product.description }}
+    </p>
+</div>
+</div>
 </div>
 
 

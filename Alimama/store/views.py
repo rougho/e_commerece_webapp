@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
-from .models import Category, Product, Cart, CartItem, Order, OrderItem
+from .models import Category, Product, Cart, CartItem, Order, OrderItem, Profile
 from django.core.exceptions import ObjectDoesNotExist
 import stripe
 from django.conf import settings
@@ -10,6 +10,8 @@ from .form import SignUpForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from .form import ProfileForm
+from django.http import HttpResponseRedirect
 
 # Create your views here.
 
@@ -37,7 +39,7 @@ def product(request, category_slug, product_slug):
             category__slug=category_slug, slug=product_slug)
     except Exception as e:
         raise e
-    quantity_range = range(product.stock)
+    quantity_range = list(range(1, product.stock + 1))
     return render(request, 'product.html', {'product': product, 'quantity_range': quantity_range})
 
 # def product(request, category_slug, product_slug):
@@ -112,7 +114,8 @@ def add_cart(request, product_id):
 
     # Get the quantity from the request's query parameters
     # Default to 1 if quantity is not provided or not an integer
-    quantity = int(request.GET.get('quantity', 1))
+    # Default to 1 if not provided
+    quantity = int(request.POST.get('quantity', 1))
 
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
@@ -137,7 +140,10 @@ def add_cart(request, product_id):
 
     cart_item.save()
 
-    return redirect('cart_detail')
+    # return redirect('cart_detail')
+    # Redirect to 'next' if present, or a default URL
+    next_url = request.POST.get('next') or request.GET.get('next') or 'home'
+    return HttpResponseRedirect(next_url)
 
 # def cart_detail(request, total=0, counter=0, cart_items=None):
     # try:
@@ -372,6 +378,33 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 #     return render(request, 'signup.html', {'form': form})
 
 
+# OLD PROFILE
+
+# @login_required(redirect_field_name='next', login_url='signin')
+# def profile(request):
+#     user_profile = Profile.objects.get(user=request.user)
+#     return render(request, 'user_profile.html', {'profile': user_profile})
+#     # Optionally handle the case where the user is somehow not authenticated
+#     # This is more of a fallback, as @login_required should take care of this
+
+@login_required(redirect_field_name='next', login_url='signin')
+def profile(request):
+    if request.method == 'POST':
+        # Handling form submission.
+        form = ProfileForm(request.POST, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            # Redirect to the profile page with a success message, or elsewhere as needed.
+            # Assuming 'profile' is the name of the URL pattern for this view.
+            return redirect('profile')
+    else:
+        # Handling a GET request, displaying the form with existing data.
+        form = ProfileForm(instance=request.user.profile)
+
+    # Pass the form to the template.
+    return render(request, 'user_profile.html', {'form': form})
+
+
 def signinView(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -400,7 +433,7 @@ def orderHistory(request):
     if request.user.is_authenticated:
         email = str(request.user.email)
         order_details = Order.objects.filter(emailAddress=email)
-    return render(request, 'orders_list.html', {'order_details': order_details, 'test': "hello"})
+    return render(request, 'orders_list.html', {'order_details': order_details})
 
 
 @login_required(redirect_field_name='next', login_url='signin')

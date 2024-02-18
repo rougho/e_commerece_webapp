@@ -2,7 +2,33 @@
 
 {% load static %}
 
-{% block title %} Alimama | Order History {% endblock %}
+{% block title %} Alimama | Profile {% endblock %}
 
 {% block content %}
-{%endblock%}
+<div class="container mt-5">
+    <div class="row mt-5">
+        {% if not request.user.is_authenticated and not request.user.first_name %}
+
+        <div class="col">
+
+            <h2>User Profile</h2>
+            <p>Please Create an account first</p>
+        </div>
+        {%elif request.user.is_authenticated and request.user.first_name %}
+
+        <div class="col">
+
+            <h2>Edit Profile</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </form>
+        </div>
+    </div>
+
+
+
+    {%endif%}
+</div>
+{% endblock %}
