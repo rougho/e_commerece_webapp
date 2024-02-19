@@ -22,7 +22,12 @@
                     <br>
                     <b>Order Total: </b>{{order.total}} Euro
                     <br>
-                    <b>Order Status: </b> <i class="bi bi-patch-check-fill" style="color: green;"></i>
+                    <b>Order Status: </b> {% if order.status != 'Canceled' %}
+                    <i class="bi bi-patch-check-fill" style="color: green;"></i>
+                    {% else %}
+                    <i class="bi bi-x-circle-fill" style="color: red;"></i>
+
+                    {%endif%}
                     <br>
                 </td>
                 <td class="text-left" colspan="2">

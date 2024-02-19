@@ -56,6 +56,10 @@
                     {%endif%}
                 </ul> -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    {% if item_count > 0 %}
+                    <a class="nav-link" href="{% url 'cart_detail' %}"><i class="bi bi-basket"
+                            style="font-size: 1.5rem;"></i>({{item_count}})</a>
+                    {% endif %}
                     {% if request.user.is_authenticated and request.user.first_name %}
                     <li class="nav-item">
                         <div class="dropdown-center">
@@ -84,10 +88,7 @@
                 </ul>
 
 
-                {% if item_count > 0 %}
-                <a class="nav-link" href="{% url 'cart_detail' %}"><i class="bi bi-basket"
-                        style="font-size: 1.5rem;"></i>({{item_count}})</a>
-                {% endif %}
+
 
             </div>
 

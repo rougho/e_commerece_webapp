@@ -20,4 +20,6 @@ urlpatterns = [
     path('userdashboard/', views.userDashboard, name='user_dashboard'),
     path('order/<int:order_id>', views.viewOrder, name='order_detail'),
     path('search/', views.search, name='search'),
+    path('delete_account/', views.delete_account, name='delete_account'),
+
 ]

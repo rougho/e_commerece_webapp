@@ -37,39 +37,71 @@ class CategoryAdmin(admin.ModelAdmin):
 admin.site.register(Category, CategoryAdmin)
 
 
+# class OrderItemAdmin(admin.TabularInline):
+#     model = OrderItem
+#     fieldsets = [
+#         ('Product', {'fields': ['product'], }),
+#         ('Quantity', {'fields': ['quantity'], }),
+#         ('Price', {'fields': ['price'], }),
+#     ]
+#     readonly_fields = ['product', 'quantity', 'price']
+#     max_num = 0
+
+
+# @admin.register(Order)
+# class OrderAdmin(admin.ModelAdmin):
+#     list_display = ['id', 'billingName', 'emailAddress', 'status', 'created']
+#     list_display_links = ('id', 'billingName')
+#     search_fields = ['id', 'token', 'total', 'emailAddress']
+#     readonly_fields = ['id', 'token', 'total', 'emailAddress', 'created', 'billingName', 'billingAddress1', 'billingCity',
+#                        'billingPostcode', 'billingCountry', 'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry']
+
+#     fieldsets = [
+#         ('ORDER INFORMATION', {'fields': ['id', 'token', 'total', 'created']}),
+#         ('BILLING INFORMATION', {'fields': ['billingName', 'billingAddress1', 'billingCity',
+#                                             'billingPostcode', 'billingCountry', 'emailAddress']}),
+#         ('SHIPPING INFORMATION', {'fields': [
+#          'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry']})
+#     ]
+
+#     inlines = [
+#         OrderItemAdmin,
+#     ]
+
+#     # def has_delete_permission(self, request, obj=None):
+#     #     return False
+
+#     def has_add_permission(self, request):
+#         return False
+
 class OrderItemAdmin(admin.TabularInline):
     model = OrderItem
-    fieldsets = [
-        ('Product', {'fields': ['product'], }),
-        ('Quantity', {'fields': ['quantity'], }),
-        ('Price', {'fields': ['price'], }),
-    ]
+    extra = 0
     readonly_fields = ['product', 'quantity', 'price']
-    max_num = 0
+    can_delete = False
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'billingName', 'emailAddress', 'created']
+    list_display = ['id', 'billingName', 'emailAddress',
+                    'status', 'created']  # Added 'status' to the list
     list_display_links = ('id', 'billingName')
-    search_fields = ['id', 'token', 'total', 'emailAddress']
+    search_fields = ['id', 'token', 'total', 'emailAddress',
+                     'status']  # Optionally add 'status' to search fields
     readonly_fields = ['id', 'token', 'total', 'emailAddress', 'created', 'billingName', 'billingAddress1', 'billingCity',
-                       'billingPostcode', 'billingCountry', 'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry']
+                       'billingPostcode', 'billingCountry', 'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry', 'status']  # Include 'status' here if you want it read-only
 
     fieldsets = [
-        ('ORDER INFORMATION', {'fields': ['id', 'token', 'total', 'created']}),
+        # Added 'status' to the ORDER INFORMATION section
+        ('ORDER INFORMATION', {'fields': [
+         'id', 'token', 'total', 'status', 'created']}),
         ('BILLING INFORMATION', {'fields': ['billingName', 'billingAddress1', 'billingCity',
                                             'billingPostcode', 'billingCountry', 'emailAddress']}),
         ('SHIPPING INFORMATION', {'fields': [
          'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry']})
     ]
 
-    inlines = [
-        OrderItemAdmin,
-    ]
-
-    # def has_delete_permission(self, request, obj=None):
-    #     return False
+    inlines = [OrderItemAdmin,]
 
     def has_add_permission(self, request):
         return False

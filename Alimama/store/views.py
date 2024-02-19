@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from .form import ProfileForm
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.views.decorators.http import require_POST
 
 
 # Create your views here.
@@ -528,6 +529,32 @@ def viewOrder(request, order_id):
 def search(request):
     products = Product.objects.filter(name__icontains=request.GET['title'])
     return render(request, 'home.html', {'products': products})
+
+
+# @require_POST
+# def delete_account(request):
+#     user = request.user
+#     user.delete()  # Delete the user account
+#     logout(request)  # Log the user out
+#     messages.success(request, 'Your account has been successfully deleted.')
+#     return redirect('home')  # Redirect to home or a goodbye page
+
+
+@require_POST
+@login_required
+def delete_account(request):
+    user = request.user
+
+    # Mark user's orders as canceled
+    Order.objects.filter(emailAddress=user.email).update(status='Canceled')
+
+    # Delete the user account
+    user.delete()
+    logout(request)
+    messages.success(
+        request, 'Your account and all associated orders have been successfully deleted.')
+    return redirect('home')  # Adjust 'home' to your actual home page URL name
+
 
 # database test
 # # Query all users
