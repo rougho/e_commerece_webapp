@@ -152,8 +152,8 @@ class ProfileInLine(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'Profile'
     # Optionally specify fields to include
-    fields = ['address_street', 'address_city',
-              'address_postcode', 'address_country', 'birthday', 'role']
+    fields = ['address_street', 'address_houseNo', 'address_city',
+              'address_postcode', 'address_country', 'phone_number', 'birthday', 'role']
 
 
 # class CustomUserAdmin(BaseUserAdmin):
@@ -173,11 +173,20 @@ class ProfileInLine(admin.StackedInline):
 class CustomUserAdmin(BaseUserAdmin):
     inlines = (ProfileInLine, )
     list_display = ('username', 'first_name',
-                    'last_name', 'is_staff', 'address')
+                    'last_name', 'is_staff', 'get_groups', 'phone_number', 'address')
+
+    def phone_number(self, obj):
+        # Assuming every User has a Profile. If not, you might want to handle DoesNotExist exception.
+        return obj.profile.phone_number
+    phone_number.short_description = 'Phone Number'
 
     def address(self, instance):
-        return f"{instance.profile.address_street}, {instance.profile.address_city}, {instance.profile.address_postcode}, {instance.profile.address_country}"
+        return f"{instance.profile.address_street}, {instance.profile.address_houseNo}, {instance.profile.address_city}, {instance.profile.address_postcode}, {instance.profile.address_country}"
     address.short_description = 'Address'
+
+    def get_groups(self, obj):
+        return ", ".join([group.name for group in obj.groups.all()])
+    get_groups.short_description = 'Role'
 
 
 # This ensures the extended functionality is correctly applied to the User model in the Django admin

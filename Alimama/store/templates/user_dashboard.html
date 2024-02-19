@@ -7,79 +7,61 @@
 {% block content %}
 
 
-<div class="text-center">
+<div class="text-center ms-5 me-5">
     <br>
-    <!-- <h1 class="text-center product_title mt-5">
-        Profile
-    </h1>
-    <div class="row mt-5">
-
-        <div class="col">
-
-            <h2>Profile Information</h2>
-            <p>Name: {{ user_profile.user.first_name }} {{ profile.user.last_name }}</p>
-            <p>Email: {{ profile.user.email }}</p>
-        </div>
-
-        <div class="col">
-
-            <h2>Edit Profile</h2>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Save changes</button>
-            </form>
-        </div>
-    </div> -->
-    <h1 class="text-center product_title mt-5">
-        Profile
-    </h1>
-    <div class="row mt-5">
-        <div class="col">
-            <h2>Profile Information</h2>
-            <div class="text-left">
-                <!-- Corrected from {{ user_profile.user.first_name }} to {{ profile.user.first_name }} -->
-                <p>Name: {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
-                <!-- Ensure you use the 'profile' key as defined in your view's context -->
-                <p>Email: {{ profile.user.email }}</p>
-                <!-- Add more fields as needed -->
-                <!-- <p>Address: {{profile.user.address_street}} , {{profile.user.address_postcode}}
-                {{profile.user.address_city}}, {{profile.user.address_country}}</p> -->
-                <p>Street: {{ profile.address_street }}</p>
-                <p>City: {{ profile.address_city }}</p>
-                <p>Postcode: {{ profile.address_postcode }}</p>
-                <p>Country: {{ profile.address_country }}</p>
+    <div class="container mt-5">
+        <h1 class="text-center product_title">
+            Profile
+        </h1>
+        <br><br>
+        <div class="row g-5"> <!-- Added gutter classes for spacing -->
+            <div class="col-md-6"> <!-- Adjusted for a 6-column width on medium devices and above -->
+                <h2>Profile Information</h2>
+                <hr style="width: 100%; margin: auto;"> <!-- Adjusted width to 100% -->
+                <br><br>
+                <div class="text-start"> <!-- 'text-left' is now 'text-start' in Bootstrap 5 -->
+                    <p><strong>Name:</strong> {{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+                    <p><strong>Email:</strong> {{ profile.user.email }}</p>
+                    <p><strong>Street and House No:</strong> {{ profile.address_street }} {{ profile.address_houseNo }}
+                    </p>
+                    <p><strong>City:</strong> {{ profile.address_city }}</p>
+                    <p><strong>Postcode:</strong> {{ profile.address_postcode }}</p>
+                    <p><strong>Country:</strong> {{ profile.address_country }}</p>
+                </div>
             </div>
 
-        </div>
+            <div class="col-md-6"> <!-- Adjusted for a 6-column width on medium devices and above -->
+                <h2>Edit Profile</h2>
+                <hr style="width: 100%; margin: auto;"> <!-- Adjusted width to 100% -->
+                <br><br>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
 
-        <div class="col">
-            <h2>Edit Profile</h2>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Save changes</button>
-            </form>
-            {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </form>
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
             </div>
-            {% endfor %}
-            {% endif %}
         </div>
     </div>
 
 
-    <br><br>
-    <hr style="width: 50%; margin: auto;">
+    <br><br><br><br>
     <br>
 
     <br>
     <h1 class="text-center product_title">
         Order History
     </h1>
-    <br>
+    <hr style="width: 50%; margin: auto;">
+
+    <br><br><br>
     {% if order_details %}
     <table class="table table-striped">
         <thead>
@@ -110,4 +92,5 @@
     {% endif %}
 </div>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
 {% endblock %}

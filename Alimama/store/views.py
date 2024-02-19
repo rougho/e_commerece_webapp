@@ -339,17 +339,38 @@ def success_view(request, order_id):
 #         # Handle the case where session_id is not provided
 #         return render(request, 'error_page.html', {'error': 'Session ID not provided.'})
 
+# SIGNUP
+# def signupView(request):
+#     if request.method == 'POST':
+#         form = SignUpForm(request.POST)
+#         if form.is_valid():
+#             # This returns the User instance if your form is a ModelForm for the User model.
+#             form.save()
+#             username = form.cleaned_data.get('username')
+#             signup_user = User.objects.get(username=username)
+#             customer_group = Group.objects.get(name='Customers')
+#             Profile.objects.create(user=signup_user, role=Profile.CUSTOMER)
+#             customer_group.user_set.add(signup_user)
+#     else:
+#         form = SignUpForm()
+#     return render(request, 'signup.html', {'form': form})
+
 
 def signupView(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            # This returns the User instance if your form is a ModelForm for the User model.
             form.save()
             username = form.cleaned_data.get('username')
             signup_user = User.objects.get(username=username)
             customer_group = Group.objects.get(name='Customers')
             customer_group.user_set.add(signup_user)
+
+            # Check if the profile already exists and create one if not
+            profile, created = Profile.objects.get_or_create(user=signup_user)
+            if created:
+                profile.role = Profile.ROLE_CHOICE()
+                profile.save()
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
@@ -439,6 +460,8 @@ def signoutView(request):
     logout(request)
     return redirect('home')
 
+# 33
+
 
 @login_required(redirect_field_name='next', login_url='signin')
 def userDashboard(request):
@@ -451,7 +474,7 @@ def userDashboard(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Profile updated successfully.')
-            return redirect('profile_and_orders')
+            return redirect('user_dashboard')
     else:
         form = ProfileForm(instance=request.user.profile)
 
@@ -466,6 +489,9 @@ def userDashboard(request):
     }
 
     return render(request, 'user_dashboard.html', context)
+
+
+# 3
 #     # retrive order
 #     if request.user.is_authenticated:
 #         email = str(request.user.email)

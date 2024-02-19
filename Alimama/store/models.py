@@ -145,16 +145,25 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # email = models.EmailField(max_length=250, blank=True)
     address_street = models.CharField(max_length=200, blank=True)
+    address_houseNo = models.CharField(max_length=50, blank=True)
     address_city = models.CharField(max_length=200, blank=True)
     address_postcode = models.CharField(max_length=200, blank=True)
     address_country = models.CharField(max_length=200, blank=True)
-    # phone_number = models.CharField(max_length=200, blank=True)
+    phone_number = models.CharField(max_length=200, blank=True)
     birthday = models.DateField(null=True, blank=True)
     role = models.PositiveSmallIntegerField(
         choices=ROLE_CHOICE, null=True, blank=True)
 
     def __str__(self):
         return self.user.username
+
+    def save(self, *args, **kwargs):
+        if self.user.groups.filter(name="Customers").exists():
+            self.role = Profile.CUSTOMER
+        elif self.user.groups.filter(name="Sellers").exists():
+            self.role = Profile.SELLER
+        # Add more conditions as needed based on your group-to-role mapping
+        super(Profile, self).save(*args, **kwargs)
 
 
 @receiver(post_save, sender=User)

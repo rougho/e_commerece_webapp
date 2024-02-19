@@ -25,10 +25,29 @@ class SignUpForm(UserCreationForm):
 
 
 class ProfileForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        # Hypothetical 'editable' parameter controlling field state;
+        # you need to pass it when initializing the form
+        editable = kwargs.pop('editable', True)
+        super(ProfileForm, self).__init__(*args, **kwargs)
+
+        if not editable:
+            for field in self.fields.values():
+                field.widget.attrs['disabled'] = 'disabled'
+
     class Meta:
         model = Profile
-        fields = ['address_street', 'address_city',
+        fields = ['address_street', 'address_houseNo', 'address_city',
                   'address_postcode', 'address_country', 'birthday']
+        widgets = {
+            'birthday': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'address_street': forms.TextInput(attrs={'class': 'form-control'}),
+            'address_houseNo': forms.TextInput(attrs={'class': 'form-control'}),
+            'address_postcode': forms.TextInput(attrs={'class': 'form-control'}),
+            'address_city': forms.TextInput(attrs={'class': 'form-control'}),
+            'address_country': forms.TextInput(attrs={'class': 'form-control'}),
+
+        }
         # Add any other fields you want the user to be able to edit
 
 
