@@ -133,8 +133,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'store', 'static', 'media')
 
-STRIPE_PUBLISHABLE_KEY = 'pk_test_51OjgQnGLe88lFWpzlKuw94rl6cu3N8LSXaEDh4SzJXyfkE81DBz5rupbyj7E2mcc3a4BXBJvREqxmhgsRL4jjeTu00AijPDzXX'
-STRIPE_SECRET_KEY = 'sk_test_51OjgQnGLe88lFWpz1gv7qu8suOfFsDPs0VSpUXZrYIQl7pV1ETEiosPFQMBbmuI7Yy10GBW4irTCs3RxczJM9QY900ZQ4y6KFs'
+STRIPE_PUBLISHABLE_KEY = ''
+STRIPE_SECRET_KEY = ''
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
