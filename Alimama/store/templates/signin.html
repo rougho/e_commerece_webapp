@@ -36,7 +36,11 @@
                     <p>{{ form | crispy}}</p>
                     <button type="submit" name="button" class="btn btn-secondary">Sign in</button>
                 </form>
+
             </div>
+            <br><br>
+            <a href="{% url 'password_reset' %}">Forgot password?</a>
+
         </div>
 
     </div>

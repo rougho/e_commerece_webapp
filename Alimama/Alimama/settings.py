@@ -59,7 +59,7 @@ ROOT_URLCONF = 'Alimama.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'store/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -137,3 +137,14 @@ STRIPE_PUBLISHABLE_KEY = 'pk_test_51OjgQnGLe88lFWpzlKuw94rl6cu3N8LSXaEDh4SzJXyfk
 STRIPE_SECRET_KEY = 'sk_test_51OjgQnGLe88lFWpz1gv7qu8suOfFsDPs0VSpUXZrYIQl7pV1ETEiosPFQMBbmuI7Yy10GBW4irTCs3RxczJM9QY900ZQ4y6KFs'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.ionos.de'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'rohi@rgho.de'
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+DEFAULT_FROM_EMAIL = 'rohi@rgho.de'
