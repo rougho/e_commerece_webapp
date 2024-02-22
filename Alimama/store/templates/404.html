@@ -1,0 +1,21 @@
+{% extends 'base.html'%}
+
+{% block content %}
+
+<div class="container text-center mb-5 mt-5">
+    <br><br><br><br><br><br><br>
+
+    <h1 style="font-size: 5rem;">404</h1>
+    <br>
+    <h3>Page not found!!
+    </h3>
+    <br>
+    <hr style="width: 50%; margin: auto;"> <!-- Adjusted width to 100% -->
+    <br><br>
+    <p>The content you looking for can not be found!</p><br>
+    <a href="{% url 'home' %}" class="btn btn-dark">Back to Home</a>
+    <br>
+</div>
+<br><br><br><br><br><br><br>
+
+{% endblock %}

@@ -14,6 +14,7 @@ from .form import ProfileForm
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.views.decorators.http import require_POST
+import logging
 
 
 # Create your views here.
@@ -555,6 +556,18 @@ def delete_account(request):
         request, 'Your account and all associated orders have been successfully deleted.')
     return redirect('home')  # Adjust 'home' to your actual home page URL name
 
+
+def error_404_view(request, exception):
+    # Optional: pass exception or other context to the template
+    context = {'exception': exception}
+    return render(request, 'store/404.html', context, status=404)
+
+
+def error_500_view(request):
+    logger = logging.getLogger(__name__)
+    logger.error('Internal Server Error: %s', request.path,
+                 exc_info=True, extra={'status_code': 500, 'request': request})
+    return render(request, 'store/500.html', status=500)
 
 # database test
 # # Query all users

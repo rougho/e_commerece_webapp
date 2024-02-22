@@ -3,108 +3,61 @@
 {% load static %}
 {% block title %} Alimama | {{product.name}} {% endblock %}
 {% block content %}
-
-
-<!-- <div class="container py-5">
-    <div class="row mt-5">
-        <div class="col-10 mx-auto col-md-6 my-3">
-            <img src="{% static 'store/images/product-1.jpg' %}" alt="">
-        </div>
-        <div class="col-10 mx-auto col-md-6 my-3">
-            <div>
-                <h1 class="product_title">Asus Motherboard</h1>
-                <p>40$</p>
-                <p class="product_description">
-                    Product Description:
-                </p>
-                <p class="text-justify product_text">
-                    Asus motherboard ROG EDGE Lorem ipsum dolor sit amet consectetur adipisicing elit. Error alias
-                    voluptate eius dolorem veniam? Asperiores odit ut perspiciatis. Illo, minus minima. Minus quaerat
-                    alias et consequuntur enim in tempore possimus.
-                </p>
-                <p class="text-justify product_text">Out of stock</p>
-            </div>
-        </div>
-    </div>
-</div> -->
 <div class="container py-5">
     <div class="row">
         <div class="col col-12 col-md-8 col-lg-6 me-5">
             <img src="{{ product.image.url }}" class="img-fluid" alt="">
-            <!--  -->
-
-            <!--  -->
         </div>
-
-        <div class="col my-5 ">
+        <div class="col my-5">
             <h1 class="product_title">{{ product.name }}</h1>
-
             <div class="d-flex justify-content-between">
                 <p>Price: <span class="price_num mb-0">{{ product.price }}</span>€</p>
-
                 {% if product.stock <= 0 %} <p class="text-justify product_text">Out of stock</p>
-                    {% elif not request.user.is_authenticated and not request.user.first_name %}
+                    {% else %}
                     <div class="row">
                         {% if product.stock < 5 %} <div class="col">
-                            Only <span style="color: red; font-size: 1rem;">{{product.stock}}</span> in Stock
+                            Only <span style="color: red; font-size: 1rem;">{{ product.stock }}</span> in Stock
                     </div>
-                    {%endif%}
+                    {% endif %}
+                    {% if request.user.is_authenticated %}
                     <div class="col">
                         <form method="post" action="{% url 'add_cart' product.id %}">
                             {% csrf_token %}
                             <input type="hidden" name="next" value="{{ request.path }}">
-                            <select class="form-select" name="quantity" id="quantity" aria-label="Quantity" disabled>
+                            <select class="form-select" name="quantity" id="quantity" aria-label="Quantity">
                                 {% for quantity in quantity_range %}
                                 <option value="{{ quantity }}">{{ quantity }}</option>
                                 {% endfor %}
                             </select>
                     </div>
                     <div class="col">
-                        <button type="submit" class="btn btn-success disabled" style="width: 200px;">Add to Cart <i
+                        <button type="submit" class="btn btn-success" style="width: 200px;">Add to Cart <i
                                 class="bi bi-cart-plus"></i></button>
                         </form>
-
                     </div>
-
+                    {% else %}
+                    <div class="col">
+                        <select class="form-select" name="quantity" id="quantity" aria-label="Quantity" disabled>
+                            {% for quantity in quantity_range %}
+                            <option value="{{ quantity }}">{{ quantity }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <form method="post" action="{% url 'signin' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.path }}">
+                            <button type="submit" class="btn btn-success" style="width: 200px;">Sign in</button>
+                        </form>
+                    </div>
+                    {% endif %}
             </div>
-            {%elif request.user.is_authenticated and request.user.first_name %}
-            <div class="row">
-                {% if product.stock < 5 %} <div class="col">
-                    Only <span style="color: red; font-size: 1rem;">{{product.stock}}</span> in Stock
-            </div>
-            {%endif%}
-            <div class="col">
-                <form method="post" action="{% url 'add_cart' product.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ request.path }}">
-                    <select class="form-select" name="quantity" id="quantity" aria-label="Quantity">
-                        {% for quantity in quantity_range %}
-                        <option value="{{ quantity }}">{{ quantity }}</option>
-                        {% endfor %}
-                    </select>
-            </div>
-            <div class="col">
-                <button type="submit" class="btn btn-success" style="width: 200px;">Add to Cart <i
-                        class="bi bi-cart-plus"></i></button>
-                </form>
-            </div>
+            {% endif %}
         </div>
-
-
-        {% endif %}
-
+        <br>
+        <p class="product_description mt-3">Product Description:</p>
+        <p class="text-justify product_text">{{ product.description }}</p>
     </div>
-
-    <br>
-    <p class="product_description mt-3">
-        Product Description:
-    </p>
-    <p class="text-justify product_text">
-        {{ product.description }}
-    </p>
 </div>
 </div>
-</div>
-
-
-{% endblock%}
+{% endblock %}

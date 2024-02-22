@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -33,4 +35,11 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(),
          name='password_reset_complete'),
 
+
+
 ]
+
+# handling the 404 error
+handler404 = 'store.views.error_404_view'
+# handling the 500 error
+handler500 = 'store.views.error_500_view'
