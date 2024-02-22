@@ -41,11 +41,13 @@
                 <h2>Edit Profile</h2>
                 <hr style="width: 100%; margin: auto;"> <!-- Adjusted width to 100% -->
                 <br><br>
-                <form method="post">
+                <form method="post" style="list-style-type: none;">
                     {% csrf_token %}
                     {{ form.as_p }}
 
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button> <a
+                        href="{% url 'change_password' %}" class="btn btn-warning">Change Password</a>
+
                 </form>
                 <br>
                 {% if messages %}

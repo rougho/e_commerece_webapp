@@ -6,15 +6,16 @@ import stripe
 from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth.models import Group, User
-from .form import SignUpForm
-from django.contrib.auth.forms import AuthenticationForm
+from .form import SignUpForm, ContactForm, ProfileForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from .form import ProfileForm
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 import logging
+from django.core.mail import send_mail, EmailMessage
+from django.contrib.auth import update_session_auth_hash
 
 
 # Create your views here.
@@ -46,15 +47,6 @@ def product(request, category_slug, product_slug):
     quantity_range = list(range(1, product.stock + 1))
     return render(request, 'product.html', {'product': product, 'quantity_range': quantity_range})
 
-# def product(request, category_slug, product_slug):
-#     try:
-#         product = Product.objects.get(
-#             category__slug=category_slug, slug=product_slug)
-#     except Product.DoesNotExist:
-#         product = None
-#         # Optionally, handle the error or redirect
-#     return render(request, 'product.html', {'product': product})
-
 
 def _cart_id(request):
     cart = request.session.session_key
@@ -63,61 +55,9 @@ def _cart_id(request):
     return cart
 
 
-# def add_cart(request, product_id):
-#     product = Product.objects.get(id=product_id)
-#     try:
-#         cart = Cart.objects.get(cart_id=_cart_id(request))
-#     except Cart.DoesNotExist:
-#         cart = Cart.objects.create(
-#             cart_id=_cart_id(request)
-#         )
-#         cart.save()
-#     try:
-#         cart_item = CartItem.objects.get(product=product, cart=cart)
-#         cart_item.quantity += 1
-#         cart_item.save()
-#     except CartItem.DoesNotExist:
-#         cart_item = CartItem.objects.create(
-#             product=product,
-#             quantity=1,
-#             cart=cart
-#         )
-
-#         cart.item.save()
-
-#     return redirect('cart_detail')
-
-
-# this work!!!!
-# def add_cart(request, product_id):
-#     product = Product.objects.get(id=product_id)
-#     try:
-#         cart = Cart.objects.get(cart_id=_cart_id(request))
-#     except Cart.DoesNotExist:
-#         cart = Cart.objects.create(
-#             cart_id=_cart_id(request)
-#         )
-#         cart.save()
-#     try:
-#         cart_item = CartItem.objects.get(product=product, cart=cart)
-#         if cart_item.quantity < cart_item.product.stock:
-#             cart_item.quantity += 1
-
-#         cart_item.save()
-#     except CartItem.DoesNotExist:
-#         cart_item = CartItem.objects.create(
-#             product=product,
-#             quantity=1,
-#             cart=cart
-#         )
-#     cart_item.save()
-
-#     return redirect('cart_detail')
 def add_cart(request, product_id):
     product = Product.objects.get(id=product_id)
 
-    # Get the quantity from the request's query parameters
-    # Default to 1 if quantity is not provided or not an integer
     # Default to 1 if not provided
     quantity = int(request.POST.get('quantity', 1))
 
@@ -148,71 +88,6 @@ def add_cart(request, product_id):
     # Redirect to 'next' if present, or a default URL
     next_url = request.POST.get('next') or request.GET.get('next') or 'home'
     return HttpResponseRedirect(next_url)
-
-# def cart_detail(request, total=0, counter=0, cart_items=None):
-    # try:
-    #     cart = Cart.objects.get(cart_id=_cart_id(request))
-    #     cart_items = CartItem.objects.filter(cart=cart, active=True)
-    #     for cart_item in cart_items:
-    #         total += (cart_item.product.price * cart_item.quantity)
-    #         counter += cart_item.quantity
-    # except ObjectDoesNotExist:
-    #     pass
-
-    # stripe.api_key = settings.STRIPE_SECRET_KEY
-    # stripe_total = int(total * 100)  # Convert total amount to cents for Stripe
-    # description = 'EC-Store - New Order'
-    # data_key = settings.STRIPE_PUBLISHABLE_KEY
-
-#     if request.method == 'POST':
-#         # Handle Stripe payment processing here
-#         token = request.POST.get('stripeToken', '')
-#         email = request.POST.get('stripeEmail', '')
-
-#         # Create a Stripe customer and charge
-#         try:
-#             customer = stripe.Customer.create(email=email, source=token)
-#             charge = stripe.Charge.create(
-#                 amount=stripe_total,
-#                 currency='eur',
-#                 description=description,
-#                 customer=customer.id
-#             )
-
-#             # If the charge is successful, create an order and order items
-#             if charge.status == 'succeeded':
-#                 order_details = Order.objects.create(
-#                     total=total,
-#                     emailAddress=email,
-#                     # Add other necessary fields
-#                 )
-#                 for cart_item in cart_items:
-#                     OrderItem.objects.create(
-#                         product=cart_item.product,
-#                         quantity=cart_item.quantity,
-#                         price=cart_item.product.price,
-#                         order=order_details
-#                     )
-#                     # Update stock and delete cart items
-#                     cart_item.product.stock -= cart_item.quantity
-#                     cart_item.product.save()
-#                     cart_item.delete()
-
-#                 # Redirect to a success page
-#                 return redirect('success_view')
-
-#         except stripe.error.CardError as e:
-#             # Handle card errors
-#             return HttpResponse(e.error.message)
-
-#     return render(request, 'cart.html', {
-#         'cart_items': cart_items,
-#         'total': total,
-#         'counter': counter,
-#         'data_key': data_key,
-#         'stripe_total': stripe_total,
-#         'description': description
-#     })
 
 
 def cart_detail(request, total=0, counter=0, cart_items=None):
@@ -330,33 +205,25 @@ def success_view(request, order_id):
         customer_order = get_object_or_404(Order, id=order_id)
     return render(request, 'order_success.html', {'customer_order': customer_order})
 
-# gpt
-# def success_view(request: HttpRequest):
-#     session_id = request.GET.get('session_id', None)
-#     if session_id:
-#         # Process the session_id to find the corresponding order
-#         # Your logic here
-#         return render(request, 'order_success.html', {'session_id': session_id})
-#     else:
-#         # Handle the case where session_id is not provided
-#         return render(request, 'error_page.html', {'error': 'Session ID not provided.'})
 
-# SIGNUP
 # def signupView(request):
 #     if request.method == 'POST':
 #         form = SignUpForm(request.POST)
 #         if form.is_valid():
-#             # This returns the User instance if your form is a ModelForm for the User model.
 #             form.save()
 #             username = form.cleaned_data.get('username')
 #             signup_user = User.objects.get(username=username)
 #             customer_group = Group.objects.get(name='Customers')
-#             Profile.objects.create(user=signup_user, role=Profile.CUSTOMER)
 #             customer_group.user_set.add(signup_user)
+
+#             # Check if the profile already exists and create one if not
+#             profile, created = Profile.objects.get_or_create(user=signup_user)
+#             if created:
+#                 profile.role = Profile.ROLE_CHOICE()
+#                 profile.save()
 #     else:
 #         form = SignUpForm()
 #     return render(request, 'signup.html', {'form': form})
-
 
 def signupView(request):
     if request.method == 'POST':
@@ -365,79 +232,22 @@ def signupView(request):
             form.save()
             username = form.cleaned_data.get('username')
             signup_user = User.objects.get(username=username)
-            customer_group = Group.objects.get(name='Customers')
+            # Ensures the group is created if it doesn't exist
+            customer_group, _ = Group.objects.get_or_create(name='Customers')
             customer_group.user_set.add(signup_user)
 
-            # Check if the profile already exists and create one if not
-            profile, created = Profile.objects.get_or_create(user=signup_user)
-            if created:
-                profile.role = Profile.ROLE_CHOICE()
-                profile.save()
+            # Assuming PROFILE_ROLE is a constant that holds the desired role value
+            profile, created = Profile.objects.get_or_create(
+                user=signup_user, defaults={'role': Profile.CUSTOMER})
+
+            # Redirect to a success page or home
+            return redirect('some_success_url')
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
-
-
-# def signupView(request):
-#     if request.method == 'POST':
-#         form = SignUpForm(request.POST)
-#         if form.is_valid():
-#             # Instead of saving the form directly, create a User instance first
-#             user = form.save(commit=False)
-#             # Use the email as the username
-#             user.username = form.cleaned_data['email']
-#             # Save the user instance
-#             user.save()
-#             # Add the user to the 'Customers' group
-#             customer_group, created = Group.objects.get_or_create(
-#                 name='Customers')
-#             customer_group.user_set.add(user)
-#             # Redirect to a new URL or show a success message
-#             # Update 'some_view_name' to your desired redirect view
-#             # return redirect('some_view_name')
-#     else:
-#         form = SignUpForm()
-#     return render(request, 'signup.html', {'form': form})
-
-
-# OLD PROFILE
-
-# @login_required(redirect_field_name='next', login_url='signin')
-# def profile(request):
-#     user_profile = Profile.objects.get(user=request.user)
-#     return render(request, 'user_profile.html', {'profile': user_profile})
-#     # Optionally handle the case where the user is somehow not authenticated
-#     # This is more of a fallback, as @login_required should take care of this
-
-
-# PROFILE
-# @login_required(redirect_field_name='next', login_url='signin')
-# def profile(request):
-#     user_profile = get_object_or_404(Profile, user=request.user)
-
-#     if request.method == 'POST':
-#         # Handling form submission.
-#         form = ProfileForm(request.POST, instance=request.user.profile)
-#         if form.is_valid():
-#             form.save()
-#             # Redirect to the profile page with a success message, or elsewhere as needed.
-#             # Assuming 'profile' is the name of the URL pattern for this view.
-#             return redirect('profile')
-#     else:
-#         # Handling a GET request, displaying the form with existing data.
-#         form = ProfileForm(instance=request.user.profile)
-
-#     # Pass the form to the template.
-#     return render(request, 'order_detail.html', {'form': form, 'profile': user_profile})
-
-
-# @login_required(redirect_field_name='next', login_url='signin')
-# def profile(request):
-
-#     return render(request, 'orders_list.html', {'form': form, 'profile': user_profile})
 
 
 def signinView(request):
@@ -493,31 +303,6 @@ def userDashboard(request):
     return render(request, 'user_dashboard.html', context)
 
 
-# 3
-#     # retrive order
-#     if request.user.is_authenticated:
-#         email = str(request.user.email)
-#         order_details = Order.objects.filter(emailAddress=email)
-
-# # retrive profile info
-#     user_profile = get_object_or_404(Profile, user=request.user)
-
-#     if request.method == 'POST':
-#         form = ProfileForm(request.POST, instance=request.user.profile)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, 'Profile updated successfully.')
-#             return redirect('profile')
-#     else:
-#         form = ProfileForm(instance=request.user.profile)
-#     print(user_profile)
-
-#     # address
-#     user_address = request.user.profile
-
-#     return render(request, 'user_dashboard.html', {'order_details': order_details, 'form': form, 'profile': user_profile, 'address': user_address})
-
-
 @login_required(redirect_field_name='next', login_url='signin')
 def viewOrder(request, order_id):
     if request.user.is_authenticated:
@@ -530,15 +315,6 @@ def viewOrder(request, order_id):
 def search(request):
     products = Product.objects.filter(name__icontains=request.GET['title'])
     return render(request, 'home.html', {'products': products})
-
-
-# @require_POST
-# def delete_account(request):
-#     user = request.user
-#     user.delete()  # Delete the user account
-#     logout(request)  # Log the user out
-#     messages.success(request, 'Your account has been successfully deleted.')
-#     return redirect('home')  # Redirect to home or a goodbye page
 
 
 @require_POST
@@ -579,3 +355,63 @@ def error_500_view(request):
 # # Print each email
 # for email in emails:
 #     print(email)
+
+
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # Process the form data
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            subject = form.cleaned_data['subject']
+            message = form.cleaned_data['message']
+
+            # Ensure from_email is set to a valid email address
+            from_email = f"{name} via Alimama Contact Form <{settings.DEFAULT_FROM_EMAIL}>"
+
+            # Create email message
+            email_message = EmailMessage(
+                subject=f"Message from {name}: {subject}",
+                body=message,
+                from_email=from_email,  # Use the valid from_email format
+                to=[settings.DEFAULT_FROM_EMAIL],
+                reply_to=[email]  # Use reply_to for the sender's email
+            )
+
+            # Send email
+            email_message.send(fail_silently=False)
+
+            # Redirect to a new URL or show a success message
+            return redirect('contact_success')
+    else:
+        form = ContactForm()
+
+    return render(request, 'contact.html', {'form': form})
+
+
+def contact_success(request):
+    return render(request, 'contact_success.html')
+
+
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Important to keep the user logged in after password change
+            update_session_auth_hash(request, user)
+            messages.success(
+                request, 'Your password was successfully updated!')
+            # Redirect to a confirmation page
+            return redirect('password_change_done')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'change_password.html', {'form': form})
+
+
+def password_change_done(request):
+    # Log out the user
+    logout(request)
+
+    return render(request, 'registration/password_change_done.html')

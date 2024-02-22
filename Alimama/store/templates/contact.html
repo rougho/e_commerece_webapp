@@ -1,0 +1,29 @@
+{% extends 'base.html'%}
+
+{% block content %}
+
+<div class="container text-center mb-5 mt-5">
+    <br><br>
+
+    <h1 style="font-size: 5rem;">Contact Us</h1>
+    <br>
+    <hr style="width: 50%; margin: auto;">
+    <br><br>
+    <!-- Use Bootstrap's grid system to center the form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6"> <!-- Adjust the column size as needed -->
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <br>
+                <hr style="width: 100%; margin: auto;">
+                <br>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Send</button>
+            </form>
+        </div>
+    </div>
+    <br>
+</div>
+<br><br><br><br><br><br><br>
+
+{% endblock %}

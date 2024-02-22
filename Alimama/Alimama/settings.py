@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-259e-da5gs-uk@g&k4rs*@62*vhii)c4z)9#(3&7wr#w0m115l'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
@@ -144,6 +144,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_INCOME = 'imap.ionos.de'
+EMAIL_INCOME_PORT = 993
+
 EMAIL_HOST = 'smtp.ionos.de'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')

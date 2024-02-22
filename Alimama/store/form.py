@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from .models import Profile
+from django.utils.safestring import mark_safe
 
 
 class SignUpForm(UserCreationForm):
@@ -80,3 +81,10 @@ class ContactForm(forms.Form):
         attrs={'class': 'form-control', 'placeholder': 'Subject'}))
     message = forms.CharField(widget=forms.Textarea(
         attrs={'class': 'form-control', 'placeholder': 'Message', 'rows': '4'}))
+    policy = forms.BooleanField(
+        required=True,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        label=mark_safe(
+            'I agree to the <a href="/policy/">privacy policy</a>'),
+        error_messages={'required': 'You must agree to the terms.'}
+    )
