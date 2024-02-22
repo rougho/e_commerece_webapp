@@ -37,7 +37,7 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),
     path('contact/success/', views.contact_success, name='contact_success'),
     path('change-password/', views.change_password, name='change_password'),
-    path('/password-change-done/', views.password_change_done,
+    path('password-change-done/', views.password_change_done,
          name='password_change_done'),
 
 

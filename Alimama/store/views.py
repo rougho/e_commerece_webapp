@@ -132,6 +132,7 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
 
             try:
                 order_details = Order.objects.create(
+                    user=request.user,
                     token=token,
                     total=total,
                     emailAddress=email,
@@ -275,14 +276,42 @@ def signoutView(request):
 # 33
 
 
+# @login_required(redirect_field_name='next', login_url='signin')
+# def userDashboard(request):
+#     # Retrieve order history
+#     order_details = Order.objects.filter(emailAddress=request.user.email)
+
+#     # Handle profile update form submission
+#     if request.method == 'POST':
+#         form = ProfileForm(request.POST, instance=request.user.profile)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'Profile updated successfully.')
+#             return redirect('user_dashboard')
+#     else:
+#         form = ProfileForm(instance=request.user.profile)
+
+#     # Fetch user profile
+#     user_profile = get_object_or_404(Profile, user=request.user)
+
+#     # Prepare context
+#     context = {
+#         'order_details': order_details,
+#         'form': form,
+#         'profile': user_profile,  # No need for 'address' as 'profile' includes it
+#     }
+
+#     return render(request, 'user_dashboard.html', context)
 @login_required(redirect_field_name='next', login_url='signin')
 def userDashboard(request):
-    # Retrieve order history
-    order_details = Order.objects.filter(emailAddress=request.user.email)
+    # Retrieve order history based on the user relationship
+    order_details = Order.objects.filter(
+        user=request.user).order_by('-created')
 
     # Handle profile update form submission
     if request.method == 'POST':
-        form = ProfileForm(request.POST, instance=request.user.profile)
+        form = ProfileForm(request.POST, request.FILES,
+                           instance=request.user.profile)
         if form.is_valid():
             form.save()
             messages.success(request, 'Profile updated successfully.')
@@ -297,19 +326,25 @@ def userDashboard(request):
     context = {
         'order_details': order_details,
         'form': form,
-        'profile': user_profile,  # No need for 'address' as 'profile' includes it
+        'profile': user_profile,
     }
 
     return render(request, 'user_dashboard.html', context)
 
 
+# @login_required(redirect_field_name='next', login_url='signin')
+# def viewOrder(request, order_id):
+#     if request.user.is_authenticated:
+#         email = str(request.user.email)
+#         order = Order.objects.get(id=order_id, emailAddress=email)
+#         order_items = OrderItem.objects.filter(order=order)
+#     return render(request, 'order_detail.html', {'order': order, 'order_items': order_items})
 @login_required(redirect_field_name='next', login_url='signin')
 def viewOrder(request, order_id):
-    if request.user.is_authenticated:
-        email = str(request.user.email)
-        order = Order.objects.get(id=order_id, emailAddress=email)
-        order_items = OrderItem.objects.filter(order=order)
-    return render(request, 'order_detail.html', {'order': order, 'order_items': order_items})
+    # Use get_object_or_404 to ensure that the order exists and belongs to the logged-in user
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order_details = OrderItem.objects.filter(order=order)
+    return render(request, 'order_detail.html', {'order': order, 'order_details': order_details})
 
 
 def search(request):
