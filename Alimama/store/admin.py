@@ -1,15 +1,14 @@
 from typing import Any
 from django.contrib import admin
 from django.contrib.admin.options import InlineModelAdmin
-from django.http import HttpRequest
 from .models import Product, Category, Order, OrderItem
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.utils.html import format_html_join
 from django.utils.safestring import mark_safe
-import stripe
 from django.conf import settings
 from .models import Profile
+from django.utils.html import format_html
 
 
 # Define ProductAdmin to customize the admin interface for Products
@@ -21,9 +20,15 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ['price', 'stock', 'available']
     prepopulated_fields = {'slug': ('name',)}
     list_per_page = 15
+    search_fields = ['name', 'description']
+    list_filter = ['available', 'created', 'updated']
+    date_hierarchy = 'created'
 
 
 # Register Product model with ProductAdmin to apply the customizations
+admin.site.site_header = "Alimama Administration"
+admin.site.site_title = "Alimama Admin Portal"
+admin.site.index_title = "Welcome to the Alimama Admin Portal"
 admin.site.register(Product, ProductAdmin)
 
 
@@ -37,43 +42,6 @@ class CategoryAdmin(admin.ModelAdmin):
 admin.site.register(Category, CategoryAdmin)
 
 
-# class OrderItemAdmin(admin.TabularInline):
-#     model = OrderItem
-#     fieldsets = [
-#         ('Product', {'fields': ['product'], }),
-#         ('Quantity', {'fields': ['quantity'], }),
-#         ('Price', {'fields': ['price'], }),
-#     ]
-#     readonly_fields = ['product', 'quantity', 'price']
-#     max_num = 0
-
-
-# @admin.register(Order)
-# class OrderAdmin(admin.ModelAdmin):
-#     list_display = ['id', 'billingName', 'emailAddress', 'status', 'created']
-#     list_display_links = ('id', 'billingName')
-#     search_fields = ['id', 'token', 'total', 'emailAddress']
-#     readonly_fields = ['id', 'token', 'total', 'emailAddress', 'created', 'billingName', 'billingAddress1', 'billingCity',
-#                        'billingPostcode', 'billingCountry', 'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry']
-
-#     fieldsets = [
-#         ('ORDER INFORMATION', {'fields': ['id', 'token', 'total', 'created']}),
-#         ('BILLING INFORMATION', {'fields': ['billingName', 'billingAddress1', 'billingCity',
-#                                             'billingPostcode', 'billingCountry', 'emailAddress']}),
-#         ('SHIPPING INFORMATION', {'fields': [
-#          'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry']})
-#     ]
-
-#     inlines = [
-#         OrderItemAdmin,
-#     ]
-
-#     # def has_delete_permission(self, request, obj=None):
-#     #     return False
-
-#     def has_add_permission(self, request):
-#         return False
-
 class OrderItemAdmin(admin.TabularInline):
     model = OrderItem
     extra = 0
@@ -81,20 +49,44 @@ class OrderItemAdmin(admin.TabularInline):
     can_delete = False
 
 
+# `@admin.register(Order)
+# class OrderAdmin(admin.ModelAdmin):
+#     list_display = ['id', 'billingName', 'emailAddress',
+#                     'status', 'created']  # Added 'status' to the list
+#     list_display_links = ('id', 'billingName')
+#     search_fields = ['id', 'token', 'total', 'emailAddress',
+#                      'status']  # Optionally add 'status' to search fields
+#     readonly_fields = ['id', 'token', 'total', 'emailAddress', 'created', 'billingName', 'billingAddress1', 'billingCity',
+#                        'billingPostcode', 'billingCountry', 'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry', 'status']  # Include 'status' here if you want it read-only
+
+#     fieldsets = [
+#         # Added 'status' to the ORDER INFORMATION section
+#         ('ORDER INFORMATION', {'fields': [
+#          'id', 'token', 'total', 'status', 'created']}),
+#         ('BILLING INFORMATION', {'fields': ['billingName', 'billingAddress1', 'billingCity',
+#                                             'billingPostcode', 'billingCountry', 'emailAddress']}),
+#         ('SHIPPING INFORMATION', {'fields': [
+#          'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry']})
+#     ]
+
+#     inlines = [OrderItemAdmin,]
+
+#     def has_add_permission(self, request):
+#         return False
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'billingName', 'emailAddress',
-                    'status', 'created']  # Added 'status' to the list
+    list_display = ['id', 'user_info', 'billingName',
+                    'emailAddress', 'status', 'created']
     list_display_links = ('id', 'billingName')
     search_fields = ['id', 'token', 'total', 'emailAddress',
-                     'status']  # Optionally add 'status' to search fields
+                     'status', 'user__username', 'user__email']  # Added user lookup
     readonly_fields = ['id', 'token', 'total', 'emailAddress', 'created', 'billingName', 'billingAddress1', 'billingCity',
-                       'billingPostcode', 'billingCountry', 'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry', 'status']  # Include 'status' here if you want it read-only
+                       'billingPostcode', 'billingCountry', 'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry', 'status', 'user_info']
 
     fieldsets = [
-        # Added 'status' to the ORDER INFORMATION section
         ('ORDER INFORMATION', {'fields': [
-         'id', 'token', 'total', 'status', 'created']}),
+         'id', 'token', 'total', 'status', 'created', 'user_info']}),
         ('BILLING INFORMATION', {'fields': ['billingName', 'billingAddress1', 'billingCity',
                                             'billingPostcode', 'billingCountry', 'emailAddress']}),
         ('SHIPPING INFORMATION', {'fields': [
@@ -103,59 +95,22 @@ class OrderAdmin(admin.ModelAdmin):
 
     inlines = [OrderItemAdmin,]
 
+    def user_info(self, obj):
+        if obj.user:  # Checking if there's a user associated with the order
+            return format_html(
+                "<div><b>Username:</b> {}<br><b>Full Name:</b> {} {}<br><b>Email:</b> {}</div>",
+                obj.user.username,
+                obj.user.first_name,
+                obj.user.last_name,
+                obj.user.email
+            )
+        else:
+            return "User account deleted"
+    user_info.short_description = "User Info"
+
     def has_add_permission(self, request):
         return False
 
-
-# stripe.api_key = settings.STRIPE_SECRET_KEY
-
-
-# class OrderItemAdmin(admin.TabularInline):
-#     model = OrderItem
-#     fieldsets = [
-#         ('Product', {'fields': ['product'], }),
-#         ('Quantity', {'fields': ['quantity'], }),
-#         ('Price', {'fields': ['price'], }),
-#     ]
-#     readonly_fields = ['product', 'quantity', 'price']
-
-
-# @admin.register(Order)
-# class OrderAdmin(admin.ModelAdmin):
-#     list_display = ['id', 'billingName', 'emailAddress',
-#                     'total', 'stripe_charge_id', 'created']
-#     list_display_links = ('id', 'billingName')
-#     search_fields = ['id', 'token', 'total', 'emailAddress']
-#     readonly_fields = ['id', 'token', 'total', 'emailAddress', 'created', 'billingName', 'billingAddress1', 'billingCity',
-#                        'billingPostcode', 'billingCountry', 'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry', 'stripe_charge_id']
-
-#     fieldsets = [
-#         ('ORDER INFORMATION', {'fields': ['id', 'token', 'total', 'created']}),
-#         ('BILLING INFORMATION', {'fields': ['billingName', 'billingAddress1', 'billingCity',
-#                                             'billingPostcode', 'billingCountry', 'emailAddress']}),
-#         ('SHIPPING INFORMATION', {'fields': [
-#          'shippingName', 'shippingAddress1', 'shippingCity', 'shippingPostcode', 'shippingCountry']})
-#     ]
-
-#     inlines = [
-#         OrderItemAdmin,
-#     ]
-
-#     def has_delete_permission(self, request, obj=None):
-#         return False
-
-#     def has_add_permission(self, request):
-#         return False
-
-#     def stripe_charge_id(self, obj):
-#         # Retrieve the stripe charge id based on the order token
-#         try:
-#             charge = stripe.Charge.retrieve(obj.token)
-#             return charge.id
-#         except stripe.error.StripeError as e:
-#             return None
-
-#     stripe_charge_id.short_description = 'Stripe Charge ID'
 
 class UserAdmin(BaseUserAdmin):
     # Extend the existing list_display to include 'group_names'
@@ -187,20 +142,6 @@ class ProfileInLine(admin.StackedInline):
     fields = ['address_street', 'address_houseNo', 'address_city',
               'address_postcode', 'address_country', 'phone_number', 'birthday', 'role']
 
-
-# class CustomUserAdmin(BaseUserAdmin):
-#     inlines = (ProfileInLine, )
-#     list_display = ('username', 'email', 'first_name',
-#                     'last_name', 'is_staff', 'address')
-
-#     def address(self, instance):
-#         return f"{instance.profile.address_street}, {instance.profile.address_postcode} {instance.profile.address_city}, {instance.profile.address_country}"
-#     address.short_description = 'Address'
-
-#     def get_inline_instances(self, request, obj=None):
-#         if not obj:
-#             return list()
-#         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
 class CustomUserAdmin(BaseUserAdmin):
     inlines = (ProfileInLine, )

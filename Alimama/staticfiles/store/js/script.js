@@ -1,0 +1,1 @@
+/home/rohi/Home/C/alimama_git/e_commerece_webapp/Alimama/store/static/store/js/script.js

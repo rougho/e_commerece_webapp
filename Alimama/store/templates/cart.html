@@ -50,21 +50,25 @@
                 </td>
                 <td> {{ items.sub_total }} €
                 </td>
-                {% if items.quantity < items.product.stock %} <td>
-                    <a href="{% url 'add_cart' items.product.id %}"><i class="bi bi-plus-square-fill"
-                            style="font-size: 24px; color: green;"></i></a>
-                    <a href="{% url 'cart_remove' items.product.id %}"><i class="bi bi-dash-square-fill"
-                            style="font-size: 24px; color: red;"></i></a>
-                    <a href="{% url 'delete_cart_item' items.product.id %}"><i class="bi bi-trash3-fill"
-                            style="font-size: 24px; color: black;"></i></a>
-                    </td>
-                    {% else %}
-                    <a><i class="bi bi-plus-square-fill" style="font-size: 24px; color: gray;"></i></a>
-                    <a href="{% url 'cart_remove' items.product.id %}"><i class="bi bi-dash-square-fill"
-                            style="font-size: 24px; color: red;"></i></a>
-                    <a href="{% url 'delete_cart_item' items.product.id %}"><i class="bi bi-trash3-fill"
-                            style="font-size: 24px; color: black;"></i></a>
-                    {% endif %}
+                <td>
+                    {% if items.quantity < items.product.stock %} <td>
+                        {{items.product.id}}
+                        <a href="{% url 'add_more_to_cart' items.product.id %}"><i class="bi bi-plus-square-fill"
+                                style="font-size: 24px; color: green;"></i></a>
+                        <a href="{% url 'cart_remove' items.product.id %}"><i class="bi bi-dash-square-fill"
+                                style="font-size: 24px; color: red;"></i></a>
+                        <a href="{% url 'delete_cart_item' items.product.id %}"><i class="bi bi-trash3-fill"
+                                style="font-size: 24px; color: black;"></i></a>
+                </td>
+                {% else %}
+                <a><i class="bi bi-plus-square-fill" style="font-size: 24px; color: gray;"></i></a>
+                <a href="{% url 'cart_remove' items.product.id %}"><i class="bi bi-dash-square-fill"
+                        style="font-size: 24px; color: red;"></i></a>
+                <a href="{% url 'delete_cart_item' items.product.id %}"><i class="bi bi-trash3-fill"
+                        style="font-size: 24px; color: black;"></i></a>
+                {% endif %}
+                </td>
+
             </tr>
             {%endfor%}
         </table>

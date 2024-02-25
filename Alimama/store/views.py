@@ -10,13 +10,13 @@ from .form import SignUpForm, ContactForm, ProfileForm
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 import logging
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import EmailMessage
 from django.contrib.auth import update_session_auth_hash
-
+from django.db import transaction
+from django.http import HttpResponseRedirect
 
 # Create your views here.
 
@@ -51,10 +51,12 @@ def product(request, category_slug, product_slug):
 def _cart_id(request):
     cart = request.session.session_key
     if not cart:
-        cart = request.session.create()
+        # request.session.create()  # test
+        cart = request.session.session_key
     return cart
 
 
+@transaction.atomic
 def add_cart(request, product_id):
     product = Product.objects.get(id=product_id)
 
@@ -86,8 +88,36 @@ def add_cart(request, product_id):
 
     # return redirect('cart_detail')
     # Redirect to 'next' if present, or a default URL
-    next_url = request.POST.get('next') or request.GET.get('next') or 'home'
+    next_url = request.POST.get('next') or request.GET.get('next')
     return HttpResponseRedirect(next_url)
+
+
+@transaction.atomic
+def add_more_to_cart(request, product_id):
+    product = Product.objects.get(id=product_id)  # Retrieve the product by ID
+    cart_id = _cart_id(request)  # Retrieve or create the cart ID
+
+    try:
+        cart = Cart.objects.get(cart_id=cart_id)
+    except Cart.DoesNotExist:
+        cart = Cart.objects.create(cart_id=cart_id)
+
+    try:
+        cart_item = CartItem.objects.get(product=product, cart=cart)
+        if cart_item.quantity < cart_item.product.stock:
+            cart_item.quantity += 1  # Correctly increment by 1
+        else:
+            # Optionally handle the case where adding another would exceed stock
+            pass
+    except CartItem.DoesNotExist:
+        cart_item = CartItem.objects.create(
+            product=product,
+            quantity=1,
+            cart=cart
+        )
+
+    cart_item.save()
+    return redirect('cart_detail')
 
 
 def cart_detail(request, total=0, counter=0, cart_items=None):
@@ -163,8 +193,6 @@ def cart_detail(request, total=0, counter=0, cart_items=None):
                     product.save()
                     order_item.delete()
 
-                    print('order created')
-
                 return redirect('success_view', order_details.id)
             except ObjectDoesNotExist:
                 pass
@@ -207,25 +235,6 @@ def success_view(request, order_id):
     return render(request, 'order_success.html', {'customer_order': customer_order})
 
 
-# def signupView(request):
-#     if request.method == 'POST':
-#         form = SignUpForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             username = form.cleaned_data.get('username')
-#             signup_user = User.objects.get(username=username)
-#             customer_group = Group.objects.get(name='Customers')
-#             customer_group.user_set.add(signup_user)
-
-#             # Check if the profile already exists and create one if not
-#             profile, created = Profile.objects.get_or_create(user=signup_user)
-#             if created:
-#                 profile.role = Profile.ROLE_CHOICE()
-#                 profile.save()
-#     else:
-#         form = SignUpForm()
-#     return render(request, 'signup.html', {'form': form})
-
 def signupView(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -242,7 +251,7 @@ def signupView(request):
                 user=signup_user, defaults={'role': Profile.CUSTOMER})
 
             # Redirect to a success page or home
-            return redirect('some_success_url')
+            return redirect('home')
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
@@ -352,20 +361,41 @@ def search(request):
     return render(request, 'home.html', {'products': products})
 
 
+# @require_POST
+# @login_required
+# def delete_account(request):
+#     user = request.user
+
+#     # Mark user's orders as canceled
+#     Order.objects.filter(emailAddress=user.email).update(status='Canceled')
+
+#     # Delete the user account
+#     user.delete()
+#     logout(request)
+#     messages.success(
+#         request, 'Your account and all associated orders have been successfully deleted.')
+#     return redirect('home')  # Adjust 'home' to your actual home page URL name
 @require_POST
 @login_required
 def delete_account(request):
     user = request.user
 
-    # Mark user's orders as canceled
-    Order.objects.filter(emailAddress=user.email).update(status='Canceled')
+    # Update the status of all orders associated with the user to 'Canceled'
+    Order.objects.filter(user=user).update(status='Canceled')
 
-    # Delete the user account
+    # Proceed with deleting the user account
     user.delete()
+
+    # Log the user out
     logout(request)
+
+    # Inform the user of the successful deletion
     messages.success(
         request, 'Your account and all associated orders have been successfully deleted.')
-    return redirect('home')  # Adjust 'home' to your actual home page URL name
+
+    # Redirect to the home page
+    # Make sure 'home' is correctly defined in your URLs
+    return redirect('home')
 
 
 def error_404_view(request, exception):
@@ -448,5 +478,4 @@ def change_password(request):
 def password_change_done(request):
     # Log out the user
     logout(request)
-
     return render(request, 'registration/password_change_done.html')

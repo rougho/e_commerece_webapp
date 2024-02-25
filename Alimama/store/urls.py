@@ -13,6 +13,10 @@ urlpatterns = [
     path('category/<slug:category_slug>/<slug:product_slug>',
          views.product, name='product_detail'),
     path('cart/add/<int:product_id>', views.add_cart, name='add_cart'),
+    path('cart/add_more/<int:product_id>/',
+         views.add_more_to_cart, name='add_more_to_cart'),
+
+
     path('cart/', views.cart_detail, name='cart_detail'),
     path('cart/remove/<int:product_id>', views.cart_remove, name='cart_remove'),
     path('cart/delete_cart_item/<int:product_id>',
@@ -41,9 +45,16 @@ urlpatterns = [
          name='password_change_done'),
 
 
-
-
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL,
+                          document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
+else:
+    # Manually serving media files in development with DEBUG=False
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
 
 # handling the 404 error
 handler404 = 'store.views.error_404_view'
