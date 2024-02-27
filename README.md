@@ -124,11 +124,15 @@ Make sure your Django settings are configured to use the environment variables f
 By following these steps, you can securely configure your application without exposing sensitive information in your codebase. Remember to add `.env` to your `.gitignore` file to prevent it from being tracked by Git and potentially exposed publicly.
 
 
-### Run the app
+## Run the app
 Run the development server:
 ```sh
 python manage.py runserver
 ```
+Access the Application:
+Open your browser and go to http://127.0.0.1:8000 to see the application running locally.
+
+
 
 ### Contributing
 We welcome contributions to this project! Please read <a href="https://github.com/rougho/e_commerece_webapp/blob/rohi/CONTRIBUTING.md">CONTRIBUTING.md</a> for details on our code of conduct, and the process for submitting pull requests.
