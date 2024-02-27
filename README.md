@@ -69,7 +69,7 @@ python manage.py runserver
 ```
 
 ### Contributing
-We welcome contributions to this project! Please read <a href="">CONTRIBUTING.md</a> for details on our code of conduct, and the process for submitting pull requests.
+We welcome contributions to this project! Please read <a href="https://github.com/rougho/e_commerece_webapp/blob/rohi/CONTRIBUTING.md">CONTRIBUTING.md</a> for details on our code of conduct, and the process for submitting pull requests.
 
 ### License
-This project is licensed under the MIT License - see the <a href="">LICENSE.md</a> file for details.
+This project is licensed under the MIT License - see the <a href="https://github.com/rougho/e_commerece_webapp/blob/rohi/LICENSE">LICENSE.md</a> file for details.
