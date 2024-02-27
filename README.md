@@ -13,19 +13,16 @@ Welcome to the GitHub repository of our E-Commerce Web Application! This project
 
 ## Getting Started
 
-Follow these instructions to get your copy of the project up and running on your local machine for development and testing purposes.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
 
 Ensure you have the following installed:
 
 - Python 3.8 or higher
-- pip
-- Virtualenv (optional)
+- Pipenv
 
-### Installation
+If you don't have Pipenv installed, you can install it by running:
 
-1. Clone the repository to your local machine:
-
-   ```sh
-   git clone https://github.com/rougho/e_commerce_webapp.git
+```sh
+pip install pipenv
