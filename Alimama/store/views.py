@@ -341,19 +341,19 @@ def userDashboard(request):
     return render(request, 'user_dashboard.html', context)
 
 
-# @login_required(redirect_field_name='next', login_url='signin')
-# def viewOrder(request, order_id):
-#     if request.user.is_authenticated:
-#         email = str(request.user.email)
-#         order = Order.objects.get(id=order_id, emailAddress=email)
-#         order_items = OrderItem.objects.filter(order=order)
-#     return render(request, 'order_detail.html', {'order': order, 'order_items': order_items})
 @login_required(redirect_field_name='next', login_url='signin')
 def viewOrder(request, order_id):
-    # Use get_object_or_404 to ensure that the order exists and belongs to the logged-in user
-    order = get_object_or_404(Order, id=order_id, user=request.user)
-    order_details = OrderItem.objects.filter(order=order)
-    return render(request, 'order_detail.html', {'order': order, 'order_details': order_details})
+    if request.user.is_authenticated:
+        email = str(request.user.email)
+        order = Order.objects.get(id=order_id, emailAddress=email)
+        order_items = OrderItem.objects.filter(order=order)
+    return render(request, 'order_detail.html', {'order': order, 'order_items': order_items})
+# @login_required(redirect_field_name='next', login_url='signin')
+# def viewOrder(request, order_id):
+#     # Use get_object_or_404 to ensure that the order exists and belongs to the logged-in user
+#     order = get_object_or_404(Order, id=order_id, user=request.user)
+#     order_details = OrderItem.objects.filter(order=order)
+#     return render(request, 'order_detail.html', {'order': order, 'order_details': order_details})
 
 
 def search(request):
