@@ -1,4 +1,4 @@
-![Banner](e_commerece_webapp/Alimama/Alimama/ec-banner.png)
+![Banner](Alimama/Alimama/ec-banner.png)
 
 # E-Commerce Web Application
 
