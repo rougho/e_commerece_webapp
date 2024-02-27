@@ -26,10 +26,11 @@ If you don't have Pipenv installed, you can install it by running:
 
 ```sh
 pip install pipenv
+```
 
 ### Prerequisites
 Clone the repository to your local machine:
 
 ```sh
 git clone https://github.com/rougho/e_commerce_webapp.git
-
+```
