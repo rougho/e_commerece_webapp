@@ -12,7 +12,11 @@
     <div class="container">
         <div class="row">
             <div class="col-10 mx-auto my-2 text-center">
+                {% if category %}
+                <h1>{{ category.name}}</h1>
+                {%else%}
                 <h1>All Products</h1>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -20,6 +24,7 @@
 
 <div class="container">
     <div class="row g-4">
+        {% if products %}
         {% for product in products %}
         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4 d-flex align-items-stretch">
             <!-- <div class="card-mb-4">
@@ -57,6 +62,10 @@
 
         </div>
         {% endfor %}
+        {% else %}
+        <h4 class="text-center mb-5"> - No item found - </h4>
+        {% endif %}
+
     </div>
 </div>
 

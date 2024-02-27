@@ -344,8 +344,8 @@ def userDashboard(request):
 @login_required(redirect_field_name='next', login_url='signin')
 def viewOrder(request, order_id):
     if request.user.is_authenticated:
-        email = str(request.user.email)
-        order = Order.objects.get(id=order_id, emailAddress=email)
+        # email = str(request.user)
+        order = Order.objects.get(id=order_id, user=request.user)
         order_items = OrderItem.objects.filter(order=order)
     return render(request, 'order_detail.html', {'order': order, 'order_items': order_items})
 # @login_required(redirect_field_name='next', login_url='signin')
