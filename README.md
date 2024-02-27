@@ -1,15 +1,18 @@
 # E-Commerce Web Application
 
-Welcome to the GitHub repository of our E-Commerce Web Application! This project is a full-featured e-commerce platform built with Django, designed to provide a seamless shopping experience for users and an easy-to-manage backend for administrators.
+### For End-Users
 
-## Features
+If you're looking to shop with us, here's how you can get started:
 
-- **User Authentication**: Secure login and registration system for users.
-- **Product Catalog**: Browse products by categories with detailed product pages.
-- **Shopping Cart**: Add items to your shopping cart and manage them easily.
-- **Order Management**: Place orders with an intuitive checkout process.
-- **Admin Panel**: A powerful admin panel for managing users, products, orders, and more.
-- **Responsive Design**: Fully responsive design that looks great on all devices.
+- **Visit Our Website**: Access our e-commerce platform by navigating to [our website](#). (Note: Replace `#` with the actual URL of your deployed application.)
+- **Browse Products**: Explore our wide range of products across different categories.
+- **Add to Cart**: Found something you like? Add it to your cart with just one click.
+- **Checkout**: Follow the simple checkout process to place your order.
+- **Track Your Order**: Keep tabs on your order with real-time updates on its status.
+
+### For Developers
+
+If you're interested in setting up the project locally for development or testing purposes, follow these steps:
 
 ## Getting Started
 
@@ -28,9 +31,45 @@ If you don't have Pipenv installed, you can install it by running:
 pip install pipenv
 ```
 
-### Prerequisites
+#### Setting Up the Project
 Clone the repository to your local machine:
 
 ```sh
 git clone https://github.com/rougho/e_commerce_webapp.git
 ```
+Navigate into the project directory:
+```sh
+cd e_commerce_webapp
+```
+
+Use Pipenv to create a virtual environment and install the dependencies:
+```sh
+pipenv install
+```
+
+Install the required dependencies:
+
+```sh
+pip install -r requirements.txt
+```
+
+Navigate into the app directory:
+```sh
+cd Alimama
+```
+
+Apply the migrations to create the database schema:
+```sh
+python manage.py migrate
+```
+
+Run the development server:
+```sh
+python manage.py runserver
+```
+
+### Contributing
+We welcome contributions to this project! Please read <a href="">CONTRIBUTING.md</a> for details on our code of conduct, and the process for submitting pull requests.
+
+### License
+This project is licensed under the MIT License - see the <a href="">LICENSE.md</a> file for details.
